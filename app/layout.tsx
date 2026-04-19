@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
-import { PWARegistration } from "./pwa-registration";
+import { PWARegistration } from "../components/pwa-registration";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -11,8 +11,15 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "Ambia",
-  description: "Ambient Soundscapes.",
+  title: "Ambia | Sensory Soundscapes",
+  description: "Immersive procedural white, pink, and brown noise for focus, sleep, and relaxation.",
+  keywords: ["white noise", "pink noise", "brown noise", "focus", "sleep", "ambient", "sensory"],
+  authors: [{ name: "Ambia Team" }],
+  openGraph: {
+    title: "Ambia | Sensory Soundscapes",
+    description: "Your procedural sanctuary for focus and rest.",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {

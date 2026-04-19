@@ -12,9 +12,9 @@ import {
   Volume1,
   Volume2,
 } from "lucide-react";
-import { NoiseSection } from "./noise-section";
-import { useNoise, type NoiseType } from "./use-noise";
-import { TimerModal } from "./timer-modal";
+import { NoiseSection } from "../components/noise-section";
+import { useNoise, type NoiseType } from "../hooks/use-noise";
+import { TimerModal } from "../components/timer-modal";
 
 export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
