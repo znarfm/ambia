@@ -22,17 +22,39 @@ export const TimerModal: React.FC<TimerModalProps> = ({
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isAnimate, setIsAnimate] = useState(false);
 
+  const handleClose = React.useCallback(() => {
+    haptic.trigger("light");
+    setIsAnimate(false);
+    setTimeout(onClose, 500);
+  }, [onClose, haptic]);
+
+  const handleSubmit = React.useCallback(() => {
+    haptic.trigger("medium");
+    const mins = parseInt(customValue);
+    if (!isNaN(mins) && mins > 0) {
+      onSetCustomTimer(mins);
+      setCustomValue("");
+      handleClose();
+    }
+  }, [customValue, onSetCustomTimer, handleClose, haptic]);
+
+  // Derived state to handle mounting immediately
+  if (isOpen && !shouldRender) {
+    setShouldRender(true);
+  }
+
   React.useEffect(() => {
     if (isOpen) {
-      setShouldRender(true);
-      // Small delay to ensure the DOM is ready for the entry animation
       const timer = setTimeout(() => setIsAnimate(true), 10);
       return () => clearTimeout(timer);
     } else {
-      setIsAnimate(false);
-      // Match this duration with your CSS transition duration
+      // Defer to avoid cascading render error
+      const frame = requestAnimationFrame(() => setIsAnimate(false));
       const timer = setTimeout(() => setShouldRender(false), 500);
-      return () => clearTimeout(timer);
+      return () => {
+        cancelAnimationFrame(frame);
+        clearTimeout(timer);
+      };
     }
   }, [isOpen]);
 
@@ -43,25 +65,9 @@ export const TimerModal: React.FC<TimerModalProps> = ({
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
   if (!shouldRender) return null;
-
-  const handleSubmit = () => {
-    haptic.trigger("medium");
-    const mins = parseInt(customValue);
-    if (!isNaN(mins) && mins > 0) {
-      onSetCustomTimer(mins);
-      setCustomValue("");
-      handleClose();
-    }
-  };
-
-  const handleClose = () => {
-    haptic.trigger("light");
-    setIsAnimate(false);
-    setTimeout(onClose, 500);
-  };
 
   return (
     <div
@@ -125,10 +131,12 @@ export const TimerModal: React.FC<TimerModalProps> = ({
               onChange={(e) => setCustomValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
               className="bg-surface-container-highest/50 rounded-2xl border border-white/5 px-6 py-4 text-lg font-medium transition-all outline-none focus:ring-2"
-              style={{
-                ["--tw-ring-color" as any]: "var(--dynamic-primary)",
-                borderColor: customValue ? "var(--dynamic-primary)" : undefined,
-              }}
+              style={
+                {
+                  ["--tw-ring-color" as string]: "var(--dynamic-primary)",
+                  borderColor: customValue ? "var(--dynamic-primary)" : undefined,
+                } as React.CSSProperties
+              }
               autoFocus
             />
           </div>

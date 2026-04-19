@@ -14,21 +14,29 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isAnimate, setIsAnimate] = useState(false);
 
-  const handleClose = () => {
+  const handleClose = React.useCallback(() => {
     haptic.trigger("light");
     setIsAnimate(false);
     setTimeout(onClose, 500);
-  };
+  }, [onClose, haptic]);
+
+  // Derived state to handle mounting immediately
+  if (isOpen && !shouldRender) {
+    setShouldRender(true);
+  }
 
   React.useEffect(() => {
     if (isOpen) {
-      setShouldRender(true);
       const timer = setTimeout(() => setIsAnimate(true), 10);
       return () => clearTimeout(timer);
     } else {
-      setIsAnimate(false);
+      // Defer to avoid cascading render error
+      const frame = requestAnimationFrame(() => setIsAnimate(false));
       const timer = setTimeout(() => setShouldRender(false), 500);
-      return () => clearTimeout(timer);
+      return () => {
+        cancelAnimationFrame(frame);
+        clearTimeout(timer);
+      };
     }
   }, [isOpen]);
 
@@ -39,7 +47,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
   if (!shouldRender) return null;
 

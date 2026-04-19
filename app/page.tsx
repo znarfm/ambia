@@ -218,7 +218,7 @@ export default function Home() {
       navigator.mediaSession.setActionHandler("previoustrack", null);
       navigator.mediaSession.setActionHandler("nexttrack", null);
     };
-  }, [isPlaying, activeNoise, volume, start, stop]);
+  }, [isPlaying, activeNoise, volume, start, stop, haptic]);
 
   const formatTime = useCallback((seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
@@ -252,7 +252,7 @@ export default function Home() {
         localStorage.setItem("ambia_timer_label", timeStr);
       }
     },
-    [isMounted],
+    [isMounted, haptic],
   );
 
   // Intersection Observer for active noise sync
