@@ -268,7 +268,7 @@ export default function Home() {
   }, [handlePlayPause, activeNoise, scrollToSection, setTheme, resolvedTheme, setIsTimerModalOpen]);
 
   const getDynamicColors = () => {
-    const isDark = resolvedTheme === "dark";
+    const isDark = isMounted && resolvedTheme === "dark";
     switch (activeNoise) {
       case "white":
         return {
@@ -329,7 +329,11 @@ export default function Home() {
           className="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-90"
           aria-label="Toggle theme"
         >
-          {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          {!isMounted ? null : resolvedTheme === "dark" ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
         </button>
       </header>
 
