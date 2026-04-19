@@ -43,6 +43,7 @@ export default function Home() {
 
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
   const dummyAudioRef = useRef<HTMLAudioElement | null>(null);
+  const endTimeRef = useRef<number | null>(null);
 
   const { start, stop, setVolume: setAudioVolume } = useNoise();
 
@@ -109,6 +110,7 @@ export default function Home() {
     stop();
     setTimeLeft(null);
     setActiveTimer(null);
+    endTimeRef.current = null;
     if (dummyAudioRef.current) {
       dummyAudioRef.current.pause();
       dummyAudioRef.current.currentTime = 0;
@@ -123,11 +125,12 @@ export default function Home() {
         localStorage.removeItem("ambia_timer_remaining");
         localStorage.removeItem("ambia_timer_label");
       }
+      endTimeRef.current = null;
       return;
     }
 
     if (timeLeft <= 0) {
-      requestAnimationFrame(() => handleStopAudio());
+      handleStopAudio();
       return;
     }
 
@@ -135,28 +138,26 @@ export default function Home() {
     if (!isPlaying) {
       localStorage.setItem("ambia_timer_remaining", timeLeft.toString());
       localStorage.removeItem("ambia_timer_end");
+      endTimeRef.current = null;
       return;
     }
 
-    // If playing, update absolute end time for background persistence
-    // Use stored endTime if available and valid, otherwise calculate new one
-    const savedEndTime = localStorage.getItem("ambia_timer_end");
-    const endTime = savedEndTime ? parseInt(savedEndTime) : Date.now() + timeLeft * 1000;
-
-    // Ensure we don't recalculate endTime if it already matches our timeLeft (roughly)
-    if (!savedEndTime) {
-      localStorage.setItem("ambia_timer_end", endTime.toString());
+    // Establish absolute end time if not set
+    if (!endTimeRef.current) {
+      const saved = localStorage.getItem("ambia_timer_end");
+      endTimeRef.current = saved ? parseInt(saved) : Date.now() + timeLeft * 1000;
+      localStorage.setItem("ambia_timer_end", endTimeRef.current.toString());
       localStorage.removeItem("ambia_timer_remaining");
     }
 
     const timer = setInterval(() => {
-      const now = Date.now();
-      const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
+      const remaining = Math.max(0, Math.floor((endTimeRef.current! - Date.now()) / 1000));
 
-      // Faster check (100ms) prevents skipping second boundaries due to drift
+      // Update state if value changed. Ref prevents effect re-run.
       setTimeLeft((prev) => (prev !== remaining ? remaining : prev));
 
       if (remaining <= 0) {
+        clearInterval(timer);
         handleStopAudio();
       }
     }, 100);
@@ -192,7 +193,7 @@ export default function Home() {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: `${activeNoise.charAt(0).toUpperCase() + activeNoise.slice(1)} Noise`,
         artist: "Ambia",
-        album: "Sensory Sanctuary",
+        album: "Ambia",
         artwork: [
           { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
           { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
@@ -270,6 +271,7 @@ export default function Home() {
       if (timeStr === null) {
         setTimeLeft(null);
         setActiveTimer(null);
+        endTimeRef.current = null;
         localStorage.removeItem("ambia_timer_remaining");
         return;
       }
@@ -280,6 +282,7 @@ export default function Home() {
 
       setTimeLeft(durationSecs);
       setActiveTimer(timeStr);
+      endTimeRef.current = null; // Clear to force recalculation in effect
       if (isMounted) {
         localStorage.setItem("ambia_timer_end", endTime.toString());
         localStorage.setItem("ambia_timer_remaining", durationSecs.toString());
@@ -740,6 +743,7 @@ export default function Home() {
           const endTime = Date.now() + durationSecs * 1000;
           setTimeLeft(durationSecs);
           setActiveTimer(`${mins}M`);
+          endTimeRef.current = null;
           localStorage.setItem("ambia_timer_end", endTime.toString());
           localStorage.setItem("ambia_timer_label", `${mins}M`);
         }}
