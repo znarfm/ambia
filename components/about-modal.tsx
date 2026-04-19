@@ -61,7 +61,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
       ></div>
 
       <div
-        className={`bg-surface-container-high relative mx-auto w-[92%] max-w-lg overflow-y-auto max-h-[90dvh] rounded-t-[2.5rem] border-t border-white/10 p-8 shadow-2xl backdrop-blur-3xl transition-all duration-500 ease-out sm:my-auto sm:rounded-3xl sm:border sm:p-10 ${
+        className={`bg-surface-container-high relative mx-auto max-h-[90dvh] w-[92%] max-w-lg overflow-y-auto rounded-t-[2.5rem] border-t border-white/10 p-8 shadow-2xl backdrop-blur-3xl transition-all duration-500 ease-out sm:my-auto sm:rounded-3xl sm:border sm:p-10 ${
           isAnimate
             ? "translate-y-0 scale-100 opacity-100"
             : "translate-y-full opacity-0 sm:translate-y-8 sm:scale-95"
@@ -98,11 +98,13 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
               Science & Research
             </h3>
             <p className="text-on-surface-variant text-sm leading-relaxed">
-              Research shows that red and pink noise can enhance productivity, executive function,
-              and working memory. While white noise may improve focus for individuals with ADHD,
-              scientific evidence regarding its effectiveness for sleep remains inconsistent across
-              different populations. Ambia offers a customizable utility to mask distractions and
-              stabilize your acoustic environment.
+              Research shows that red (<span className="text-primary font-bold">Brown</span>ian) and{" "}
+              <span className="font-bold text-pink-600 dark:text-pink-400">pink</span> noise can
+              enhance productivity, executive function, and working memory. While{" "}
+              <span className="font-bold">white</span> noise may improve focus for individuals with
+              ADHD, scientific evidence regarding its effectiveness for sleep remains inconsistent
+              across different populations. Ambia offers a customizable utility to mask distractions
+              and stabilize your acoustic environment.
             </p>
             <div className="flex flex-wrap gap-3">
               <a
@@ -144,7 +146,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
             className="text-xs font-bold tracking-[0.3em] uppercase transition-all duration-500"
             style={{
               color: "var(--dynamic-primary)",
-              opacity: 0.8,
+              opacity: 0.9,
               textShadow: "0 0 12px var(--dynamic-glow)",
             }}
           >

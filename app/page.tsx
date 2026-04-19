@@ -383,24 +383,24 @@ export default function Home() {
         };
       case "pink":
         return {
-          primary: "#FFB2BB",
-          container: "rgba(255, 178, 187, 0.2)",
-          text: "#2D1619",
-          glow: isDark ? "rgba(255, 178, 187, 0.4)" : "rgba(255, 100, 120, 0.3)",
+          primary: isDark ? "#FFB2BB" : "#D81B60",
+          container: isDark ? "rgba(255, 178, 187, 0.2)" : "rgba(216, 27, 96, 0.1)",
+          text: isDark ? "#2D1619" : "#FFFFFF",
+          glow: isDark ? "rgba(255, 178, 187, 0.4)" : "rgba(216, 27, 96, 0.3)",
         };
       case "brown":
         return {
-          primary: "#E3C28E",
-          container: "rgba(227, 194, 142, 0.2)",
-          text: "#2D1F0E",
-          glow: isDark ? "rgba(227, 194, 142, 0.4)" : "rgba(120, 80, 40, 0.3)",
+          primary: isDark ? "#E3C28E" : "#745B30",
+          container: isDark ? "rgba(227, 194, 142, 0.2)" : "rgba(116, 91, 48, 0.1)",
+          text: isDark ? "#2D1F0E" : "#FFFFFF",
+          glow: isDark ? "rgba(227, 194, 142, 0.4)" : "rgba(116, 91, 48, 0.3)",
         };
       default:
         return {
-          primary: "#E3C28E",
-          container: "rgba(227, 194, 142, 0.2)",
-          text: "#2D1F0E",
-          glow: "rgba(227, 194, 142, 0.4)",
+          primary: isDark ? "#E3C28E" : "#745B30",
+          container: isDark ? "rgba(227, 194, 142, 0.2)" : "rgba(116, 91, 48, 0.1)",
+          text: isDark ? "#2D1F0E" : "#FFFFFF",
+          glow: isDark ? "rgba(227, 194, 142, 0.4)" : "rgba(116, 91, 48, 0.3)",
         };
     }
   };

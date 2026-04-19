@@ -2,7 +2,7 @@
 
 **Sensory Sanctuary PWA.** Focus, sleep, and relaxation through procedural noise.
 
-Ambia is a minimalist procedural noise generator designed to create a "Sensory Sanctuary". Unlike static audio loops, Ambia generates White, Pink, and Brown (*or Brownian or Red*) noise in real-time using the Web Audio API, providing a seamless and infinite soundscape tailored for deep focus or restful sleep.
+Ambia is a minimalist procedural noise generator designed to create a "Sensory Sanctuary". Unlike static audio loops, Ambia generates White, Pink, and Brown (_or Brownian or Red_) noise in real-time using the Web Audio API, providing a seamless and infinite soundscape tailored for deep focus or restful sleep.
 
 > [!NOTE]
 > This project was developed as part of the **"Current Trends and Topics in Computing"** course.
