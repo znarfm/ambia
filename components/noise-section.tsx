@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
 interface NoiseSectionProps {
   id: string;
@@ -15,8 +16,17 @@ interface NoiseSectionProps {
 }
 
 const BackgroundAura: React.FC<{ colors: string[] }> = ({ colors }) => {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
+  const isDark = resolvedTheme === "dark";
+
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none">
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 select-none transition-opacity duration-1000 ${isDark ? "opacity-40" : "opacity-10"}`}>
       <div className="absolute inset-0 opacity-40 [perspective:1000px] [backface-visibility:hidden]">
         <div 
           className={`absolute -top-[25%] -left-[25%] w-[110%] h-[110%] rounded-full blur-[160px] animate-float-slow transform-gpu ${colors[0]}`}

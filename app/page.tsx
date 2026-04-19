@@ -11,12 +11,16 @@ import {
   SkipForward,
   Volume1,
   Volume2,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { NoiseSection } from "../components/noise-section";
 import { useNoise, type NoiseType } from "../hooks/use-noise";
 import { TimerModal } from "../components/timer-modal";
+import { useTheme } from "next-themes";
 
 export default function Home() {
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(65);
@@ -194,13 +198,14 @@ export default function Home() {
   }, []);
 
   const getDynamicColors = () => {
+    const isDark = resolvedTheme === "dark";
     switch (activeNoise) {
       case "white":
         return {
-          primary: "#FFFFFF",
-          container: "rgba(255, 255, 255, 0.15)",
-          text: "#000000",
-          glow: "rgba(255, 255, 255, 0.4)",
+          primary: isDark ? "#FFFFFF" : "#4A4A4A",
+          container: isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.08)",
+          text: isDark ? "#000000" : "#FFFFFF",
+          glow: isDark ? "rgba(255, 255, 255, 0.4)" : "rgba(0, 0, 0, 0.2)",
         };
       case "pink":
         return {
@@ -239,14 +244,20 @@ export default function Home() {
       }}
     >
       {/* Top Navigation */}
-      <header className="bg-surface z-50 flex flex-shrink-0 items-center justify-between border-b border-white/5 px-8 py-6">
+      <header className="bg-surface z-50 flex flex-shrink-0 items-center justify-between border-b border-outline-variant/10 px-8 py-6 transition-colors duration-500">
         <div className="flex items-center gap-4">
           <Waves className="text-primary h-6 w-6" style={{ color: "var(--dynamic-primary)" }} />
         </div>
         <h1 className="font-manrope text-on-surface text-sm font-light tracking-[0.2em] uppercase">
           AMBIA
         </h1>
-        <div className="w-6"></div>
+        <button
+          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          className="text-on-surface-variant hover:text-on-surface transition-colors"
+          aria-label="Toggle theme"
+        >
+          {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </button>
       </header>
 
       {/* Vertical Dot Indicator (Pagination) */}

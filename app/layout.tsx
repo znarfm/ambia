@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { PWARegistration } from "../components/pwa-registration";
+import { ThemeProvider } from "../components/theme-provider";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -35,10 +36,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${manrope.variable} dark h-full antialiased`}>
+    <html lang="en" className={`${manrope.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="flex min-h-full flex-col">
-        {children}
-        <PWARegistration />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+          <PWARegistration />
+        </ThemeProvider>
       </body>
     </html>
   );
