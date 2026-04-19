@@ -36,6 +36,7 @@ export default function Home() {
   const [activeNoise, setActiveNoise] = useState<NoiseType>("white");
   
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
+  const dummyAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const { start, stop, setVolume: setAudioVolume } = useNoise();
 
@@ -142,6 +143,77 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [timeLeft, stop, isMounted, isPlaying]);
 
+  // Media Session API for OS integration
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+
+    if (isPlaying) {
+      dummyAudioRef.current?.play().catch(() => {});
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: `${activeNoise.charAt(0).toUpperCase() + activeNoise.slice(1)} Noise`,
+        artist: "Ambia",
+        album: "Sensory Sanctuary",
+        artwork: [
+          { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+          { src: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+        ],
+      });
+      navigator.mediaSession.playbackState = "playing";
+    } else {
+      dummyAudioRef.current?.pause();
+      navigator.mediaSession.playbackState = "paused";
+    }
+
+    const noises: NoiseType[] = ["white", "pink", "brown"];
+
+    navigator.mediaSession.setActionHandler("play", () => {
+      setIsPlaying(true);
+      start(activeNoise, volume);
+    });
+
+    navigator.mediaSession.setActionHandler("pause", () => {
+      setIsPlaying(false);
+      stop();
+    });
+
+    navigator.mediaSession.setActionHandler("stop", () => {
+      setIsPlaying(false);
+      stop();
+      setTimeLeft(null);
+    });
+
+    navigator.mediaSession.setActionHandler("previoustrack", () => {
+      const currentIndex = noises.indexOf(activeNoise);
+      const nextIndex = (currentIndex - 1 + noises.length) % noises.length;
+      const nextNoise = noises[nextIndex];
+      setActiveNoise(nextNoise);
+      if (isPlaying) start(nextNoise, volume);
+      
+      // Scroll to the new section
+      sectionsRef.current[nextIndex]?.scrollIntoView({ behavior: "smooth" });
+    });
+
+    navigator.mediaSession.setActionHandler("nexttrack", () => {
+      const currentIndex = noises.indexOf(activeNoise);
+      const nextIndex = (currentIndex + 1) % noises.length;
+      const nextNoise = noises[nextIndex];
+      setActiveNoise(nextNoise);
+      if (isPlaying) start(nextNoise, volume);
+
+      // Scroll to the new section
+      sectionsRef.current[nextIndex]?.scrollIntoView({ behavior: "smooth" });
+    });
+
+    return () => {
+      navigator.mediaSession.setActionHandler("play", null);
+      navigator.mediaSession.setActionHandler("pause", null);
+      navigator.mediaSession.setActionHandler("stop", null);
+      navigator.mediaSession.setActionHandler("previoustrack", null);
+      navigator.mediaSession.setActionHandler("nexttrack", null);
+    };
+  }, [isPlaying, activeNoise, volume, start, stop]);
+
   const formatTime = useCallback((seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
@@ -207,11 +279,13 @@ export default function Home() {
     if (nextState) {
       haptic.trigger("medium");
       start(activeNoise, volume);
+      dummyAudioRef.current?.play().catch(() => {});
     } else {
       haptic.trigger("light");
       stop();
+      dummyAudioRef.current?.pause();
     }
-  }, [isPlaying, activeNoise, volume, start, stop]);
+  }, [isPlaying, activeNoise, volume, start, stop, haptic]);
 
   // Sync audio when noise type changes while playing
   useEffect(() => {
@@ -596,6 +670,15 @@ export default function Home() {
           localStorage.setItem("ambia_timer_end", endTime.toString());
           localStorage.setItem("ambia_timer_label", `${mins}M`);
         }}
+      />
+
+      {/* Hidden dummy audio to trigger Media Session API reliably */}
+      <audio 
+        ref={dummyAudioRef}
+        loop 
+        playsInline 
+        src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA=="
+        className="hidden"
       />
     </div>
   );
