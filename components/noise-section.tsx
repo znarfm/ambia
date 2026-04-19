@@ -50,7 +50,7 @@ const BackgroundAura: React.FC<{ colors: string[] }> = ({ colors }) => {
   );
 };
 
-export const NoiseSection: React.FC<NoiseSectionProps> = ({
+export const NoiseSection = React.forwardRef<HTMLElement, NoiseSectionProps>(({
   id,
   title,
   level,
@@ -61,9 +61,9 @@ export const NoiseSection: React.FC<NoiseSectionProps> = ({
   decorative,
   overlayGradient,
   auraColors = ["bg-white/5", "bg-white/5"],
-}) => {
+}, ref) => {
   return (
-    <section id={id} className={`snap-section w-full pt-16 ${bgClass}`}>
+    <section ref={ref} id={id} className={`snap-section w-full pt-16 ${bgClass}`}>
       <BackgroundAura colors={auraColors} />
 
       <div className="absolute inset-0 z-0 opacity-20">
@@ -86,4 +86,6 @@ export const NoiseSection: React.FC<NoiseSectionProps> = ({
       {decorative}
     </section>
   );
-};
+});
+
+NoiseSection.displayName = "NoiseSection";

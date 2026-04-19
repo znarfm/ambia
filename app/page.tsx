@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Waves,
   Timer,
@@ -30,6 +30,8 @@ export default function Home() {
   const [activeTimer, setActiveTimer] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [activeNoise, setActiveNoise] = useState<NoiseType>("white");
+  
+  const sectionsRef = useRef<(HTMLElement | null)[]>([]);
 
   const { start, stop, setVolume: setAudioVolume } = useNoise();
 
@@ -48,10 +50,8 @@ export default function Home() {
         setTimeout(() => {
           const sections = ["white", "pink", "brown"];
           const idx = sections.indexOf(savedNoise);
-          if (idx !== -1) {
-            document
-              .querySelectorAll(".snap-section")
-              [idx]?.scrollIntoView({ behavior: "instant" });
+          if (idx !== -1 && sectionsRef.current[idx]) {
+            sectionsRef.current[idx]?.scrollIntoView({ behavior: "instant" });
           }
         }, 0);
       }
@@ -190,8 +190,9 @@ export default function Home() {
       },
     );
 
-    const sections = document.querySelectorAll(".snap-section");
-    sections.forEach((section) => observer.observe(section));
+    sectionsRef.current.forEach((section) => {
+      if (section) observer.observe(section);
+    });
 
     return () => observer.disconnect();
   }, [isMounted]);
@@ -224,8 +225,7 @@ export default function Home() {
 
   const scrollToSection = useCallback((index: number) => {
     haptic.trigger("selection");
-    const sections = document.querySelectorAll(".snap-section");
-    sections[index]?.scrollIntoView({ behavior: "smooth" });
+    sectionsRef.current[index]?.scrollIntoView({ behavior: "smooth" });
   }, [haptic]);
 
   const handleVolumeWheel = useCallback((e: React.WheelEvent) => {
@@ -379,6 +379,7 @@ export default function Home() {
       {/* Main Content: Snap Scroll Sections */}
       <main className="snap-container flex-grow overflow-y-auto">
         <NoiseSection
+          ref={(el) => { sectionsRef.current[0] = el; }}
           id="white"
           title="WHITE"
           level="High"
@@ -389,6 +390,7 @@ export default function Home() {
         />
 
         <NoiseSection
+          ref={(el) => { sectionsRef.current[1] = el; }}
           id="pink"
           title="PINK"
           level="Mid"
@@ -399,6 +401,7 @@ export default function Home() {
         />
 
         <NoiseSection
+          ref={(el) => { sectionsRef.current[2] = el; }}
           id="brown"
           title="BROWN"
           level="Deep"
