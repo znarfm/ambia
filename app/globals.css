@@ -1,26 +1,97 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-manrope: var(--font-manrope);
+  
+  --color-secondary: #9b9ea5;
+  --color-error-dim: #ba573f;
+  --color-surface-container-lowest: #000000;
+  --color-secondary-dim: #9b9ea5;
+  --color-inverse-primary: #745b30;
+  --color-background: #0e0e0e;
+  --color-on-surface: #e7e5e5;
+  --color-surface-variant: #252626;
+  --color-tertiary: #fffae3;
+  --color-on-tertiary-fixed-variant: #6a653f;
+  --color-on-primary-container: #edcb97;
+  --color-on-error: #450900;
+  --color-on-background: #e7e5e5;
+  --color-surface-dim: #0e0e0e;
+  --color-secondary-fixed-dim: #d2d4db;
+  --color-inverse-surface: #fcf9f8;
+  --color-surface: #0e0e0e;
+  --color-primary: #e3c28e;
+  --color-secondary-container: #383b41;
+  --color-error: #ed7f64;
+  --color-primary-dim: #d4b481;
+  --color-error-container: #7e2b17;
+  --color-tertiary-fixed: #f9f2c1;
+  --color-surface-tint: #e3c28e;
+  --color-on-tertiary-container: #5c5833;
+  --color-surface-container-low: #131313;
+  --color-surface-container: #191a1a;
+  --color-on-secondary-fixed: #3c3f45;
+  --color-outline-variant: #484848;
+  --color-on-secondary: #1d2026;
+  --color-surface-container-high: #1f2020;
+  --color-on-tertiary-fixed: #4c4925;
+  --color-on-surface-variant: #acabaa;
+  --color-on-primary-fixed: #513c14;
+  --color-on-tertiary: #64603a;
+  --color-outline: #767575;
+  --color-surface-bright: #2b2c2c;
+  --color-surface-container-highest: #252626;
+  --color-on-primary-fixed-variant: #70582d;
+  --color-tertiary-fixed-dim: #ebe4b4;
+  --color-on-error-container: #ff9b82;
+  --color-inverse-on-surface: #565555;
+  --color-secondary-fixed: #e0e2ea;
+  --color-primary-container: #5a431a;
+  --color-tertiary-dim: #ebe4b4;
+  --color-primary-fixed-dim: #f1d09a;
+  --color-on-secondary-fixed-variant: #595b62;
+  --color-on-secondary-container: #bdbfc6;
+  --color-on-primary: #523c14;
+  --color-tertiary-container: #f3ecbc;
+  --color-primary-fixed: #ffdeab;
+
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    color-scheme: dark;
+    @apply bg-surface text-on-surface font-manrope m-0 flex flex-col h-screen overflow-hidden;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .snap-container {
+    scroll-snap-type: y mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-outline-variant) transparent;
+    @apply flex-grow overflow-y-scroll h-full;
+  }
+  .snap-container::-webkit-scrollbar {
+    width: 6px;
+  }
+  .snap-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .snap-container::-webkit-scrollbar-thumb {
+    background: var(--color-outline-variant);
+    border-radius: 10px;
+  }
+  .snap-container::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+  }
+  .snap-section {
+    scroll-snap-align: start;
+    @apply h-full flex flex-col justify-center items-center relative overflow-hidden;
+  }
+  .grain-overlay {
+    @apply absolute inset-0 pointer-events-none opacity-[0.03];
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCDgezsytkseqvuLNg1LOZyC8K0e4rhowDwSJKaPQNkTI0uu4XplmGPPWmdp-JG88A2sW8M2q7JVV_u-LTSuYGHiZzdW20LRruCQFHMPH6jomDFpN9dOizuI4m6gp-87fuUkDA42KJWpOstXg7cB3xaqJBvyRSV4JU9kZVnIiGOFmX_6VzIlTFfstO8OYI45vLSLwAkT-IuMtXvGoMv8vxEmSdGdpI_QT0KBxswsc_y6jB65FmL-Q_29vcV4Tu7l0lDnc_nT5wrfGk);
+  }
 }
