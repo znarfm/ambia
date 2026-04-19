@@ -15,6 +15,11 @@
       "source": "nextlevelbuilder/ui-ux-pro-max-skill",
       "sourceType": "github",
       "computedHash": "0a413bf988d06481f69bb81df2070741c3ba12dd9f1be2706d57f259c905992d"
+    },
+    "web-haptics": {
+      "source": "lochie/web-haptics",
+      "sourceType": "github",
+      "computedHash": "a6dce0fce9dc37f4dac87cd9ed2dc0e32e1ec3a5d8c860e1af07fee670295b7b"
     }
   }
 }
