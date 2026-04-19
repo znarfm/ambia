@@ -4,7 +4,7 @@ import { Waves } from "lucide-react";
 
 export default function Loading() {
   return (
-    <div className="bg-surface flex h-screen flex-col items-center justify-center gap-6">
+    <div className="bg-surface flex h-dvh flex-col items-center justify-center gap-6">
       <div className="relative">
         <div className="bg-primary/20 absolute inset-0 animate-ping rounded-full"></div>
         <Waves className="text-primary h-12 w-12 animate-pulse" />

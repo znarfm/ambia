@@ -409,7 +409,7 @@ export default function Home() {
 
   return (
     <div
-      className={`flex h-screen flex-col transition-all duration-700 ${isMounted ? "opacity-100" : "opacity-0"}`}
+      className={`flex h-dvh flex-col transition-all duration-700 ${isMounted ? "opacity-100" : "opacity-0"}`}
       style={{
         ["--dynamic-primary" as string]: colors.primary,
         ["--dynamic-container" as string]: colors.container,
@@ -530,7 +530,7 @@ export default function Home() {
       </main>
 
       {/* Bottom Control Panel */}
-      <footer className="bg-surface/80 safe-area-bottom border-outline-variant/10 z-50 flex-shrink-0 border-t backdrop-blur-lg transition-all duration-500">
+      <footer className="bg-surface/80 border-outline-variant/10 safe-area-bottom z-50 flex-shrink-0 border-t backdrop-blur-lg transition-all duration-500">
         <div className="mx-auto max-w-screen-2xl px-8 py-6 md:py-8">
           <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-3 md:gap-4">
             {/* Left: Sleep Timer */}

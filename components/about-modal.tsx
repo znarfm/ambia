@@ -61,7 +61,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
       ></div>
 
       <div
-        className={`bg-surface-container-high relative mx-auto w-full max-w-lg rounded-t-[2.5rem] border-t border-white/10 p-8 shadow-2xl backdrop-blur-3xl transition-all duration-500 ease-out sm:my-auto sm:rounded-3xl sm:border sm:p-10 ${
+        className={`bg-surface-container-high relative mx-auto w-[92%] max-w-lg overflow-y-auto max-h-[90dvh] rounded-t-[2.5rem] border-t border-white/10 p-8 shadow-2xl backdrop-blur-3xl transition-all duration-500 ease-out sm:my-auto sm:rounded-3xl sm:border sm:p-10 ${
           isAnimate
             ? "translate-y-0 scale-100 opacity-100"
             : "translate-y-full opacity-0 sm:translate-y-8 sm:scale-95"

@@ -15,7 +15,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="bg-surface flex h-screen flex-col items-center justify-center gap-8 px-6 text-center">
+    <div className="bg-surface flex h-dvh flex-col items-center justify-center gap-8 px-6 text-center">
       <div className="bg-error/10 flex h-20 w-20 items-center justify-center rounded-full">
         <AlertCircle className="text-error h-10 w-10" />
       </div>

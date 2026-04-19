@@ -79,7 +79,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
       ></div>
 
       <div
-        className={`bg-surface-container-high relative mx-auto w-full max-w-sm rounded-t-[2.5rem] border-t border-white/10 p-8 shadow-2xl backdrop-blur-3xl transition-all duration-500 ease-out sm:my-auto sm:rounded-3xl sm:border sm:p-10 ${
+        className={`bg-surface-container-high relative mx-auto w-[92%] max-w-sm overflow-y-auto max-h-[90dvh] rounded-t-[2.5rem] border-t border-white/10 p-8 shadow-2xl backdrop-blur-3xl transition-all duration-500 ease-out sm:my-auto sm:rounded-3xl sm:border sm:p-10 ${
           isAnimate
             ? "translate-y-0 scale-100 opacity-100"
             : "translate-y-full opacity-0 sm:translate-y-8 sm:scale-95"
@@ -130,7 +130,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
               value={customValue}
               onChange={(e) => setCustomValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              className="bg-surface-container-highest/50 rounded-2xl border border-white/5 px-6 py-4 text-lg font-medium transition-all outline-none focus:ring-2"
+              className="bg-surface-container-highest/50 rounded-2xl border border-white/5 px-6 py-4 text-lg font-medium transition-all outline-none focus:ring-2 focus:ring-inset"
               style={
                 {
                   ["--tw-ring-color" as string]: "var(--dynamic-primary)",

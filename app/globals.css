@@ -141,13 +141,13 @@
 
 @layer base {
   body {
-    @apply bg-surface text-on-surface font-manrope m-0 flex h-screen flex-col overflow-hidden transition-colors duration-500;
+    @apply bg-surface text-on-surface font-manrope m-0 flex h-dvh flex-col overflow-hidden transition-colors duration-500;
   }
 }
 
 @layer utilities {
   .snap-container {
-    @apply h-screen snap-y snap-mandatory overflow-y-auto scroll-smooth;
+    @apply h-dvh snap-y snap-mandatory overflow-y-auto scroll-smooth;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
@@ -159,8 +159,7 @@
     scroll-snap-align: start;
     @apply relative flex h-full flex-col items-center justify-center overflow-hidden;
   }
-  .snap-section {
-    scroll-snap-align: start;
-    @apply relative flex h-full flex-col items-center justify-center overflow-hidden;
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }

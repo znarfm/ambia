@@ -4,7 +4,7 @@ import { Waves } from "lucide-react";
 
 export default function OfflinePage() {
   return (
-    <div className="bg-surface flex min-h-screen flex-col items-center justify-center p-6 text-center">
+    <div className="bg-surface flex min-h-dvh flex-col items-center justify-center p-6 text-center">
       <div className="bg-surface-variant/30 mb-8 flex h-24 w-24 items-center justify-center rounded-3xl backdrop-blur-xl">
         <Waves className="text-primary h-12 w-12" />
       </div>
