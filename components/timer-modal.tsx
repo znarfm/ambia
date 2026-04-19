@@ -1,16 +1,31 @@
 "use client";
 
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import { X, Timer } from "lucide-react";
 
 interface TimerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSetCustomTimer: (minutes: number) => void;
+  activeNoise: string;
 }
 
-export const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSetCustomTimer }) => {
+export const TimerModal: React.FC<TimerModalProps> = ({
+  isOpen,
+  onClose,
+  onSetCustomTimer,
+  activeNoise,
+}) => {
   const [customValue, setCustomValue] = useState("");
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -35,14 +50,24 @@ export const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSetCu
           <X className="h-5 w-5" />
         </button>
 
-        <h3 className="mb-2 text-xl font-bold tracking-tight">Custom Timer</h3>
-        <p className="text-on-surface-variant mb-8 text-sm">Set a duration for your soundscape.</p>
+        <div className="flex items-center gap-3 mb-2">
+          <Timer 
+            className="w-5 h-5 transition-colors duration-500" 
+            style={{ 
+              color: "var(--dynamic-primary)",
+              filter: "drop-shadow(0 0 5px var(--dynamic-glow))"
+            }}
+          />
+          <h3 className="text-xl font-bold tracking-tight">Custom Timer</h3>
+        </div>
+        <p className="text-on-surface-variant mb-8 text-sm">Set a duration for your {activeNoise} soundscape.</p>
 
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
             <label
               htmlFor="duration"
-              className="text-primary/60 text-[10px] font-bold tracking-widest uppercase"
+              className="text-[10px] font-bold tracking-widest uppercase opacity-60"
+              style={{ color: "var(--dynamic-primary)" }}
             >
               Duration (Minutes)
             </label>
@@ -53,14 +78,23 @@ export const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSetCu
               value={customValue}
               onChange={(e) => setCustomValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              className="bg-surface-container-highest focus:border-primary/30 rounded-xl border border-white/5 px-4 py-3 transition-colors outline-none"
+              className="bg-surface-container-highest rounded-xl border border-white/5 px-4 py-3 transition-all outline-none focus:ring-2"
+              style={{ 
+                ["--tw-ring-color" as any]: "var(--dynamic-primary)",
+                borderColor: customValue ? "var(--dynamic-primary)" : undefined
+              }}
               autoFocus
             />
           </div>
 
           <button
             onClick={handleSubmit}
-            className="bg-primary hover:bg-primary-dim w-full rounded-xl py-4 font-bold text-zinc-950 transition-colors"
+            className="w-full rounded-xl py-4 font-bold transition-all active:scale-95"
+            style={{
+              backgroundColor: "var(--dynamic-primary)",
+              color: "var(--dynamic-text)",
+              boxShadow: "0 10px 15px -3px var(--dynamic-glow)",
+            }}
           >
             Set Timer
           </button>
