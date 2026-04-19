@@ -1,16 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { 
-  Waves, 
-  Timer, 
-  Plus, 
-  SkipBack, 
-  Play, 
+import {
+  Waves,
+  Timer,
+  Plus,
+  SkipBack,
+  Play,
   Pause,
-  SkipForward, 
-  Volume1, 
-  Volume2
+  SkipForward,
+  Volume1,
+  Volume2,
 } from "lucide-react";
 import { NoiseSection } from "./noise-section";
 import { useNoise, type NoiseType } from "./use-noise";
@@ -29,35 +29,40 @@ export default function Home() {
 
   // Load state from localStorage on mount
   useEffect(() => {
-    setIsMounted(true);
-    const savedVolume = localStorage.getItem("ambia_volume");
-    if (savedVolume) setVolume(parseInt(savedVolume));
+    requestAnimationFrame(() => {
+      setIsMounted(true);
 
-    const savedNoise = localStorage.getItem("ambia_noise");
-    if (savedNoise) {
-      setActiveNoise(savedNoise as NoiseType);
-      // Wait for DOM
-      setTimeout(() => {
-        const sections = ["white", "pink", "brown"];
-        const idx = sections.indexOf(savedNoise);
-        if (idx !== -1) {
-          document.querySelectorAll(".snap-section")[idx]?.scrollIntoView({ behavior: "instant" });
-        }
-      }, 0);
-    }
+      const savedVolume = localStorage.getItem("ambia_volume");
+      if (savedVolume) setVolume(parseInt(savedVolume));
 
-    const savedEndTime = localStorage.getItem("ambia_timer_end");
-    if (savedEndTime) {
-      const endTime = parseInt(savedEndTime);
-      const remaining = Math.floor((endTime - Date.now()) / 1000);
-      if (remaining > 0) {
-        setTimeLeft(remaining);
-        setActiveTimer(localStorage.getItem("ambia_timer_label"));
-      } else {
-        localStorage.removeItem("ambia_timer_end");
-        localStorage.removeItem("ambia_timer_label");
+      const savedNoise = localStorage.getItem("ambia_noise");
+      if (savedNoise) {
+        setActiveNoise(savedNoise as NoiseType);
+        // Wait for DOM
+        setTimeout(() => {
+          const sections = ["white", "pink", "brown"];
+          const idx = sections.indexOf(savedNoise);
+          if (idx !== -1) {
+            document
+              .querySelectorAll(".snap-section")
+              [idx]?.scrollIntoView({ behavior: "instant" });
+          }
+        }, 0);
       }
-    }
+
+      const savedEndTime = localStorage.getItem("ambia_timer_end");
+      if (savedEndTime) {
+        const endTime = parseInt(savedEndTime);
+        const remaining = Math.floor((endTime - Date.now()) / 1000);
+        if (remaining > 0) {
+          setTimeLeft(remaining);
+          setActiveTimer(localStorage.getItem("ambia_timer_label"));
+        } else {
+          localStorage.removeItem("ambia_timer_end");
+          localStorage.removeItem("ambia_timer_label");
+        }
+      }
+    });
   }, []);
 
   // Persist Volume
@@ -84,10 +89,12 @@ export default function Home() {
     }
 
     if (timeLeft <= 0) {
-      setIsPlaying(false);
-      stop();
-      setTimeLeft(null);
-      setActiveTimer(null);
+      requestAnimationFrame(() => {
+        setIsPlaying(false);
+        stop();
+        setTimeLeft(null);
+        setActiveTimer(null);
+      });
       if (isMounted) {
         localStorage.removeItem("ambia_timer_end");
         localStorage.removeItem("ambia_timer_label");
@@ -102,29 +109,33 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [timeLeft, stop, isMounted]);
 
-  const formatTime = (seconds: number) => {
+  const formatTime = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
+  }, []);
 
-  const handleTimerSelect = (timeStr: string | null) => {
-    if (timeStr === null) {
-      setTimeLeft(null);
-      setActiveTimer(null);
-      return;
-    }
-    const mins = parseInt(timeStr);
-    const durationSecs = mins * 60;
-    const endTime = Date.now() + durationSecs * 1000;
-    
-    setTimeLeft(durationSecs);
-    setActiveTimer(timeStr);
-    if (isMounted) {
-      localStorage.setItem("ambia_timer_end", endTime.toString());
-      localStorage.setItem("ambia_timer_label", timeStr);
-    }
-  };
+  const handleTimerSelect = useCallback(
+    (timeStr: string | null) => {
+      if (timeStr === null) {
+        setTimeLeft(null);
+        setActiveTimer(null);
+        return;
+      }
+      const mins = parseInt(timeStr);
+      const durationSecs = mins * 60;
+      const now = Date.now();
+      const endTime = now + durationSecs * 1000;
+
+      setTimeLeft(durationSecs);
+      setActiveTimer(timeStr);
+      if (isMounted) {
+        localStorage.setItem("ambia_timer_end", endTime.toString());
+        localStorage.setItem("ambia_timer_label", timeStr);
+      }
+    },
+    [isMounted],
+  );
 
   // Intersection Observer for active noise sync
   useEffect(() => {
@@ -137,7 +148,7 @@ export default function Home() {
           }
         });
       },
-      { threshold: 0.6 }
+      { threshold: 0.6 },
     );
 
     const sections = document.querySelectorAll(".snap-section");
@@ -189,28 +200,28 @@ export default function Home() {
           primary: "#FFFFFF",
           container: "rgba(255, 255, 255, 0.15)",
           text: "#000000",
-          glow: "rgba(255, 255, 255, 0.4)"
+          glow: "rgba(255, 255, 255, 0.4)",
         };
       case "pink":
         return {
           primary: "#FFB2BB",
           container: "rgba(255, 178, 187, 0.2)",
           text: "#2D1619",
-          glow: "rgba(255, 178, 187, 0.4)"
+          glow: "rgba(255, 178, 187, 0.4)",
         };
       case "brown":
         return {
           primary: "#E3C28E",
           container: "rgba(227, 194, 142, 0.2)",
           text: "#2D1F0E",
-          glow: "rgba(227, 194, 142, 0.4)"
+          glow: "rgba(227, 194, 142, 0.4)",
         };
       default:
         return {
           primary: "#E3C28E",
           container: "rgba(227, 194, 142, 0.2)",
           text: "#2D1F0E",
-          glow: "rgba(227, 194, 142, 0.4)"
+          glow: "rgba(227, 194, 142, 0.4)",
         };
     }
   };
@@ -218,9 +229,9 @@ export default function Home() {
   const colors = getDynamicColors();
 
   return (
-    <div 
-      className={`h-screen flex flex-col transition-all duration-700 ${isMounted ? "opacity-100" : "opacity-0"}`}
-      style={{ 
+    <div
+      className={`flex h-screen flex-col transition-all duration-700 ${isMounted ? "opacity-100" : "opacity-0"}`}
+      style={{
         ["--dynamic-primary" as string]: colors.primary,
         ["--dynamic-container" as string]: colors.container,
         ["--dynamic-text" as string]: colors.text,
@@ -228,18 +239,18 @@ export default function Home() {
       }}
     >
       {/* Top Navigation */}
-      <header className="flex-shrink-0 flex justify-between items-center px-8 py-6 bg-surface border-b border-white/5 z-50">
+      <header className="bg-surface z-50 flex flex-shrink-0 items-center justify-between border-b border-white/5 px-8 py-6">
         <div className="flex items-center gap-4">
-          <Waves className="text-primary w-6 h-6" style={{ color: "var(--dynamic-primary)" }} />
+          <Waves className="text-primary h-6 w-6" style={{ color: "var(--dynamic-primary)" }} />
         </div>
-        <h1 className="font-manrope uppercase tracking-[0.2em] text-sm font-light text-on-surface">
+        <h1 className="font-manrope text-on-surface text-sm font-light tracking-[0.2em] uppercase">
           AMBIA
         </h1>
         <div className="w-6"></div>
       </header>
 
       {/* Vertical Dot Indicator (Pagination) */}
-      <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-4">
+      <nav className="fixed top-1/2 right-8 z-40 hidden -translate-y-1/2 flex-col gap-4 md:flex">
         {["white", "pink", "brown"].map((type, idx) => (
           <button
             key={type}
@@ -247,13 +258,13 @@ export default function Home() {
             className="group relative flex items-center justify-center p-2"
             aria-label={`Scroll to ${type} noise`}
           >
-            <div 
-              className={`w-2 h-2 rounded-full transition-all duration-500 ${
+            <div
+              className={`h-2 w-2 rounded-full transition-all duration-500 ${
                 activeNoise === type ? "scale-125" : "bg-white/20 hover:bg-white/40"
               }`}
-              style={{ 
+              style={{
                 backgroundColor: activeNoise === type ? "var(--dynamic-primary)" : undefined,
-                boxShadow: activeNoise === type ? "0 0 12px var(--dynamic-glow)" : undefined 
+                boxShadow: activeNoise === type ? "0 0 12px var(--dynamic-glow)" : undefined,
               }}
             ></div>
           </button>
@@ -294,16 +305,23 @@ export default function Home() {
       </main>
 
       {/* Bottom Control Panel */}
-      <footer className="flex-shrink-0 bg-surface-container-high border-t border-white/5 z-50 safe-area-bottom">
-        <div className="max-w-screen-2xl mx-auto px-6 py-4 md:py-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 md:gap-4">
-            
+      <footer className="bg-surface-container-high safe-area-bottom z-50 flex-shrink-0 border-t border-white/5">
+        <div className="mx-auto max-w-screen-2xl px-6 py-4 md:py-6">
+          <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-3 md:gap-4">
             {/* Left: Sleep Timer */}
-            <div className="flex items-center justify-center md:justify-start gap-3 order-3 md:order-1">
-              <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/5">
-                <Timer className="w-4 h-4 transition-colors duration-500" style={{ color: timeLeft ? "var(--dynamic-primary)" : "var(--color-on-surface-variant)" }} />
+            <div className="order-3 flex items-center justify-center gap-3 md:order-1 md:justify-start">
+              <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-3 py-2">
+                <Timer
+                  className="h-4 w-4 transition-colors duration-500"
+                  style={{
+                    color: timeLeft ? "var(--dynamic-primary)" : "var(--color-on-surface-variant)",
+                  }}
+                />
                 {timeLeft !== null && (
-                  <span className="text-xs font-mono font-bold tabular-nums min-w-[40px] transition-colors duration-500" style={{ color: "var(--dynamic-primary)" }}>
+                  <span
+                    className="min-w-[40px] font-mono text-xs font-bold tabular-nums transition-colors duration-500"
+                    style={{ color: "var(--dynamic-primary)" }}
+                  >
                     {formatTime(timeLeft)}
                   </span>
                 )}
@@ -312,32 +330,49 @@ export default function Home() {
                 {["15", "30", "60"].map((mins) => (
                   <button
                     key={mins}
-                    onClick={() => handleTimerSelect(mins === activeTimer?.replace("M", "") ? null : mins)}
-                    className="w-10 h-10 flex items-center justify-center rounded-xl text-[10px] font-bold tracking-tight transition-all border"
-                    style={{ 
-                      backgroundColor: activeTimer === `${mins}M` ? "var(--dynamic-container)" : "rgba(255,255,255,0.05)",
-                      borderColor: activeTimer === `${mins}M` ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.05)",
-                      color: activeTimer === `${mins}M` ? "var(--dynamic-primary)" : "var(--color-on-surface-variant)"
+                    onClick={() =>
+                      handleTimerSelect(mins === activeTimer?.replace("M", "") ? null : mins)
+                    }
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border text-[10px] font-bold tracking-tight transition-all"
+                    style={{
+                      backgroundColor:
+                        activeTimer === `${mins}M`
+                          ? "var(--dynamic-container)"
+                          : "rgba(255,255,255,0.05)",
+                      borderColor:
+                        activeTimer === `${mins}M`
+                          ? "rgba(255,255,255,0.1)"
+                          : "rgba(255,255,255,0.05)",
+                      color:
+                        activeTimer === `${mins}M`
+                          ? "var(--dynamic-primary)"
+                          : "var(--color-on-surface-variant)",
                     }}
                   >
                     {mins}
                   </button>
                 ))}
-                <button 
+                <button
                   onClick={() => setIsTimerModalOpen(true)}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/5 text-on-surface-variant hover:bg-white/10 hover:text-on-surface transition-all"
-                  style={{ 
-                    backgroundColor: activeTimer && !["15", "30", "60"].map(m => `${m}M`).includes(activeTimer!) ? "var(--dynamic-container)" : undefined,
-                    color: activeTimer && !["15", "30", "60"].map(m => `${m}M`).includes(activeTimer!) ? "var(--dynamic-primary)" : undefined 
+                  className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-xl border border-white/5 bg-white/5 transition-all hover:bg-white/10"
+                  style={{
+                    backgroundColor:
+                      activeTimer && !["15", "30", "60"].map((m) => `${m}M`).includes(activeTimer!)
+                        ? "var(--dynamic-container)"
+                        : undefined,
+                    color:
+                      activeTimer && !["15", "30", "60"].map((m) => `${m}M`).includes(activeTimer!)
+                        ? "var(--dynamic-primary)"
+                        : undefined,
                   }}
                   aria-label="Set custom timer"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="h-4 w-4" />
                 </button>
                 {timeLeft !== null && (
-                  <button 
+                  <button
                     onClick={() => handleTimerSelect(null)}
-                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-error/10 border border-error/20 text-error hover:bg-error/20 transition-all text-[10px] font-bold"
+                    className="bg-error/10 border-error/20 text-error hover:bg-error/20 flex h-10 w-10 items-center justify-center rounded-xl border text-[10px] font-bold transition-all"
                   >
                     OFF
                   </button>
@@ -346,97 +381,100 @@ export default function Home() {
             </div>
 
             {/* Center: Playback Controls */}
-            <div className="flex items-center justify-center gap-8 order-1 md:order-2">
-              <button 
+            <div className="order-1 flex items-center justify-center gap-8 md:order-2">
+              <button
                 onClick={() => {
                   const types: NoiseType[] = ["white", "pink", "brown"];
                   const idx = types.indexOf(activeNoise);
                   scrollToSection((idx - 1 + 3) % 3);
                 }}
-                className="p-2 text-on-surface-variant hover:text-on-surface transition-colors active:scale-90"
+                className="text-on-surface-variant hover:text-on-surface p-2 transition-colors active:scale-90"
                 aria-label="Previous noise type"
               >
-                <SkipBack className="w-5 h-5 fill-current" />
+                <SkipBack className="h-5 w-5 fill-current" />
               </button>
-              
-              <button 
+
+              <button
                 onClick={handlePlayPause}
-                className="w-16 h-16 rounded-full flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all group relative"
-                style={{ 
+                className="group relative flex h-16 w-16 items-center justify-center rounded-full shadow-xl transition-all hover:scale-105 active:scale-95"
+                style={{
                   backgroundColor: "var(--dynamic-primary)",
                   color: "var(--dynamic-text)",
-                  boxShadow: `0 20px 25px -5px var(--dynamic-glow)`
+                  boxShadow: `0 20px 25px -5px var(--dynamic-glow)`,
                 }}
                 aria-label={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? (
-                  <Pause className="w-8 h-8 fill-current relative z-10" />
+                  <Pause className="relative z-10 h-8 w-8 fill-current" />
                 ) : (
-                  <Play className="w-8 h-8 fill-current ml-1 relative z-10" />
+                  <Play className="relative z-10 ml-1 h-8 w-8 fill-current" />
                 )}
               </button>
 
-              <button 
+              <button
                 onClick={() => {
                   const types: NoiseType[] = ["white", "pink", "brown"];
                   const idx = types.indexOf(activeNoise);
                   scrollToSection((idx + 1) % 3);
                 }}
-                className="p-2 text-on-surface-variant hover:text-on-surface transition-colors active:scale-90"
+                className="text-on-surface-variant hover:text-on-surface p-2 transition-colors active:scale-90"
                 aria-label="Next noise type"
               >
-                <SkipForward className="w-5 h-5 fill-current" />
+                <SkipForward className="h-5 w-5 fill-current" />
               </button>
             </div>
 
             {/* Right: Volume & Settings */}
-            <div className="flex items-center justify-center md:justify-end gap-4 order-2 md:order-3">
-              <div 
-                className="flex items-center gap-3 w-full max-w-[200px] md:w-48 group"
+            <div className="order-2 flex items-center justify-center gap-4 md:order-3 md:justify-end">
+              <div
+                className="group flex w-full max-w-[200px] items-center gap-3 md:w-48"
                 onWheel={handleVolumeWheel}
               >
-                <button 
+                <button
                   onClick={() => setVolume(0)}
                   className="text-on-surface-variant hover:text-on-surface transition-colors"
                 >
-                  {volume === 0 ? <Volume1 className="w-4 h-4 text-error" /> : <Volume1 className="w-4 h-4" />}
+                  {volume === 0 ? (
+                    <Volume1 className="text-error h-4 w-4" />
+                  ) : (
+                    <Volume1 className="h-4 w-4" />
+                  )}
                 </button>
-                
-                <div className="flex-grow h-1 bg-white/10 rounded-full relative cursor-pointer overflow-hidden">
+
+                <div className="relative h-1 flex-grow cursor-pointer overflow-hidden rounded-full bg-white/10">
                   <input
                     type="range"
                     min="0"
                     max="100"
                     value={volume}
                     onChange={(e) => setVolume(parseInt(e.target.value))}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                     aria-label="Volume slider"
                   />
-                  <div 
-                    className="absolute left-0 top-0 h-full transition-all duration-75"
-                    style={{ 
+                  <div
+                    className="absolute top-0 left-0 h-full transition-all duration-75"
+                    style={{
                       width: `${volume}%`,
-                      backgroundColor: "var(--dynamic-primary)"
+                      backgroundColor: "var(--dynamic-primary)",
                     }}
                   ></div>
                 </div>
 
-                <button 
+                <button
                   onClick={() => setVolume(100)}
                   className="text-on-surface-variant hover:text-on-surface transition-colors"
                 >
-                  <Volume2 className="w-4 h-4" />
+                  <Volume2 className="h-4 w-4" />
                 </button>
               </div>
             </div>
-
           </div>
         </div>
       </footer>
 
-      <TimerModal 
-        isOpen={isTimerModalOpen} 
-        onClose={() => setIsTimerModalOpen(false)} 
+      <TimerModal
+        isOpen={isTimerModalOpen}
+        onClose={() => setIsTimerModalOpen(false)}
         onSetCustomTimer={(mins) => {
           const durationSecs = mins * 60;
           const endTime = Date.now() + durationSecs * 1000;

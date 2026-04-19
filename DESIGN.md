@@ -24,6 +24,7 @@ The palette is built on "Atmospheric Depth." We avoid flat colors in favor of a 
 ### Surface Hierarchy & Nesting
 
 Treat the UI as a series of physical layers—like stacked sheets of fine, heavy-stock paper.
+
 - **Base Layer:** `surface` (#0e0e0e)
 - **Primary Interaction Containers:** `surface-container` (#191a1a)
 - **Floating Elements/Overlays:** `surface-container-highest` (#252626)
@@ -103,12 +104,14 @@ If a border is required for accessibility (e.g., in high-contrast mode), use a *
 
 ### Do
 
-* **Do** embrace asymmetry. Center-align the play button, but left-align the metadata to create a dynamic, editorial layout.
-- **Do** use `secondary_container` for secondary actions to keep them visually "quiet."
-- **Do** prioritize white space. If you think there is enough space, add 20% more.
+- **Do** embrace asymmetry. Center-align the play button, but left-align the metadata to create a dynamic, editorial layout.
+
+* **Do** use `secondary_container` for secondary actions to keep them visually "quiet."
+* **Do** prioritize white space. If you think there is enough space, add 20% more.
 
 ### Don’t
 
-* **Don’t** use 100% opaque borders. They create "visual noise" that contradicts the peaceful brand personality.
-- **Don’t** use pure white for text. Use `on_surface` (#e7e5e5) to reduce eye strain in Dark/Cozy mode.
-- **Don’t** use "Pop" animations. Use slow, ease-in-out transitions (300ms+) to maintain a supportive, gentle atmosphere.
+- **Don’t** use 100% opaque borders. They create "visual noise" that contradicts the peaceful brand personality.
+
+* **Don’t** use pure white for text. Use `on_surface` (#e7e5e5) to reduce eye strain in Dark/Cozy mode.
+* **Don’t** use "Pop" animations. Use slow, ease-in-out transitions (300ms+) to maintain a supportive, gentle atmosphere.

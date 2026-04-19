@@ -12,7 +12,7 @@ export function useNoise() {
 
   const createNoiseBuffer = useCallback((type: NoiseType) => {
     if (!audioCtx.current) return null;
-    
+
     // Return cached buffer if exists
     if (buffers.current[type]) return buffers.current[type];
 
@@ -28,13 +28,13 @@ export function useNoise() {
       let b0, b1, b2, b3, b4, b5, b6;
       b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
       for (let i = 0; i < bufferSize; i++) {
-        let white = Math.random() * 2 - 1;
+        const white = Math.random() * 2 - 1;
         b0 = 0.99886 * b0 + white * 0.0555179;
         b1 = 0.99332 * b1 + white * 0.0750759;
-        b2 = 0.96900 * b2 + white * 0.1538520;
-        b3 = 0.86650 * b3 + white * 0.3104856;
-        b4 = 0.55000 * b4 + white * 0.5329522;
-        b5 = -0.7616 * b5 - white * 0.0168980;
+        b2 = 0.969 * b2 + white * 0.153852;
+        b3 = 0.8665 * b3 + white * 0.3104856;
+        b4 = 0.55 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.016898;
         output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
         output[i] *= 0.11; // Voss-McCartney scaling
         b6 = white * 0.115926;
@@ -42,8 +42,8 @@ export function useNoise() {
     } else if (type === "brown") {
       let lastOut = 0.0;
       for (let i = 0; i < bufferSize; i++) {
-        let white = Math.random() * 2 - 1;
-        let out = (lastOut + (0.02 * white)) / 1.02;
+        const white = Math.random() * 2 - 1;
+        const out = (lastOut + 0.02 * white) / 1.02;
         output[i] = out * 3.5;
         lastOut = out;
       }
@@ -53,44 +53,53 @@ export function useNoise() {
     return buffer;
   }, []);
 
-  const start = useCallback((type: NoiseType, volume: number) => {
-    if (typeof window === "undefined") return;
+  const start = useCallback(
+    (type: NoiseType, volume: number) => {
+      if (typeof window === "undefined") return;
 
-    if (!audioCtx.current) {
-      const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
-      audioCtx.current = new AudioContextClass();
-      gainNode.current = audioCtx.current.createGain();
-      gainNode.current.connect(audioCtx.current.destination);
-    }
+      if (!audioCtx.current) {
+        const AudioContextClass =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        audioCtx.current = new AudioContextClass();
+        gainNode.current = audioCtx.current.createGain();
+        gainNode.current.connect(audioCtx.current.destination);
+      }
 
-    if (audioCtx.current.state === "suspended") {
-      audioCtx.current.resume();
-    }
+      if (audioCtx.current.state === "suspended") {
+        audioCtx.current.resume();
+      }
 
-    const gainValue = Math.pow(volume / 100, 2) * 0.7;
-    gainNode.current!.gain.setValueAtTime(gainValue, audioCtx.current.currentTime);
+      const gainValue = Math.pow(volume / 100, 2) * 0.7;
+      gainNode.current!.gain.setValueAtTime(gainValue, audioCtx.current.currentTime);
 
-    if (sourceNode.current) {
-      try {
-        sourceNode.current.stop();
-      } catch (e) {}
-    }
+      if (sourceNode.current) {
+        try {
+          sourceNode.current.stop();
+        } catch {
+          // Ignore errors from stopping source
+        }
+      }
 
-    const buffer = createNoiseBuffer(type);
-    if (buffer && audioCtx.current) {
-      sourceNode.current = audioCtx.current.createBufferSource();
-      sourceNode.current.buffer = buffer;
-      sourceNode.current.loop = true;
-      sourceNode.current.connect(gainNode.current!);
-      sourceNode.current.start();
-    }
-  }, [createNoiseBuffer]);
+      const buffer = createNoiseBuffer(type);
+      if (buffer && audioCtx.current) {
+        sourceNode.current = audioCtx.current.createBufferSource();
+        sourceNode.current.buffer = buffer;
+        sourceNode.current.loop = true;
+        sourceNode.current.connect(gainNode.current!);
+        sourceNode.current.start();
+      }
+    },
+    [createNoiseBuffer],
+  );
 
   const stop = useCallback(() => {
     if (sourceNode.current) {
       try {
         sourceNode.current.stop();
-      } catch (e) {}
+      } catch {
+        // Ignore errors from stopping source
+      }
       sourceNode.current = null;
     }
   }, []);

@@ -2,7 +2,7 @@
 
 @theme {
   --font-manrope: var(--font-manrope);
-  
+
   --color-secondary: #9b9ea5;
   --color-error-dim: #ba573f;
   --color-surface-container-lowest: #000000;
@@ -62,15 +62,15 @@
 @layer base {
   body {
     color-scheme: dark;
-    @apply bg-surface text-on-surface font-manrope m-0 flex flex-col h-screen overflow-hidden;
+    @apply bg-surface text-on-surface font-manrope m-0 flex h-screen flex-col overflow-hidden;
   }
 }
 
 @layer utilities {
   .snap-container {
-    @apply h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth;
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    @apply h-screen snap-y snap-mandatory overflow-y-auto scroll-smooth;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 
   .snap-container::-webkit-scrollbar {
@@ -78,10 +78,10 @@
   }
   .snap-section {
     scroll-snap-align: start;
-    @apply h-full flex flex-col justify-center items-center relative overflow-hidden;
+    @apply relative flex h-full flex-col items-center justify-center overflow-hidden;
   }
   .grain-overlay {
-    @apply absolute inset-0 pointer-events-none opacity-[0.03];
+    @apply pointer-events-none absolute inset-0 opacity-[0.03];
     background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCDgezsytkseqvuLNg1LOZyC8K0e4rhowDwSJKaPQNkTI0uu4XplmGPPWmdp-JG88A2sW8M2q7JVV_u-LTSuYGHiZzdW20LRruCQFHMPH6jomDFpN9dOizuI4m6gp-87fuUkDA42KJWpOstXg7cB3xaqJBvyRSV4JU9kZVnIiGOFmX_6VzIlTFfstO8OYI45vLSLwAkT-IuMtXvGoMv8vxEmSdGdpI_QT0KBxswsc_y6jB65FmL-Q_29vcV4Tu7l0lDnc_nT5wrfGk);
   }
 }
