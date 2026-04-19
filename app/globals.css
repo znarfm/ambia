@@ -177,27 +177,65 @@
   .noise-white {
     --dynamic-primary: #4a4a4a;
     --dynamic-container: rgba(0, 0, 0, 0.08);
+    --primary: var(--dynamic-primary);
   }
   .dark .noise-white {
     --dynamic-primary: #ffffff;
     --dynamic-container: rgba(255, 255, 255, 0.15);
+    --primary: var(--dynamic-primary);
   }
 
   .noise-pink {
     --dynamic-primary: #d81b60;
     --dynamic-container: rgba(216, 27, 96, 0.1);
+    --primary: var(--dynamic-primary);
   }
   .dark .noise-pink {
     --dynamic-primary: #ffb2bb;
     --dynamic-container: rgba(255, 178, 187, 0.2);
+    --primary: var(--dynamic-primary);
   }
 
   .noise-brown {
     --dynamic-primary: #745b30;
     --dynamic-container: rgba(116, 91, 48, 0.1);
+    --primary: var(--dynamic-primary);
   }
   .dark .noise-brown {
     --dynamic-primary: #e3c28e;
     --dynamic-container: rgba(227, 194, 142, 0.2);
+    --primary: var(--dynamic-primary);
+  }
+
+  @keyframes float-slow {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(5%, 10%) scale(1.1);
+    }
+    66% {
+      transform: translate(-5%, 5%) scale(0.9);
+    }
+  }
+
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      opacity: 0.5;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+  }
+
+  .animate-float-slow {
+    animation: float-slow 15s ease-in-out infinite;
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 12s ease-in-out infinite;
   }
 }

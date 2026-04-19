@@ -6,8 +6,6 @@ interface NoiseSectionProps {
   level: string;
   description: string;
   bgClass: string;
-  textColorClass?: string;
-  accentColorClass?: string;
   decorative?: React.ReactNode;
   overlayGradient?: string;
   auraColors?: string[];
@@ -15,19 +13,19 @@ interface NoiseSectionProps {
 
 const BackgroundAura = React.memo<{ colors: string[] }>(({ colors }) => {
   return (
-    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-20 saturate-150 transition-opacity duration-1000 select-none dark:opacity-30 dark:saturate-100">
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-30 saturate-150 transition-opacity duration-1000 select-none dark:opacity-50 dark:saturate-100">
       <div className="absolute inset-0 [backface-visibility:hidden] [perspective:1000px]">
         <div
-          className={`animate-float-slow absolute -top-[25%] -left-[25%] h-[110%] w-[110%] transform-gpu rounded-full blur-[100px] will-change-transform ${colors[0]} dark:bg-primary/20`}
+          className={`animate-float-slow absolute -top-[25%] -left-[25%] h-[110%] w-[110%] transform-gpu rounded-full blur-[100px] will-change-transform ${colors[0]}`}
           style={{ animationDelay: "0s" }}
         ></div>
         <div
-          className={`animate-float-slow absolute -right-[25%] -bottom-[25%] h-[100%] w-[100%] transform-gpu rounded-full blur-[90px] will-change-transform ${colors[1] || colors[0]} dark:bg-primary/10`}
+          className={`animate-float-slow absolute -right-[25%] -bottom-[25%] h-[100%] w-[100%] transform-gpu rounded-full blur-[90px] will-change-transform ${colors[1] || colors[0]}`}
           style={{ animationDelay: "-5s" }}
         ></div>
         {colors[2] && (
           <div
-            className={`animate-pulse-slow absolute top-1/2 left-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-full blur-[70px] will-change-transform ${colors[2]} dark:bg-primary/15`}
+            className={`animate-pulse-slow absolute top-1/2 left-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-full blur-[70px] will-change-transform ${colors[2]}`}
           ></div>
         )}
       </div>
@@ -45,8 +43,6 @@ export const NoiseSection = React.memo(
         level,
         description,
         bgClass,
-        textColorClass = "text-on-surface",
-        accentColorClass = "text-primary",
         decorative,
         overlayGradient,
         auraColors = ["bg-white/5", "bg-white/5"],
@@ -54,7 +50,7 @@ export const NoiseSection = React.memo(
       ref,
     ) => {
       return (
-        <section ref={ref} id={id} className={`snap-section w-full pt-16 ${bgClass}`}>
+        <section ref={ref} id={id} className={`snap-section w-full pt-16 noise-${id} ${bgClass}`}>
           <BackgroundAura colors={auraColors} />
 
           <div className="absolute inset-0 z-0 opacity-20">
@@ -63,12 +59,14 @@ export const NoiseSection = React.memo(
 
           <div className="relative z-10 px-6 text-center">
             <p
-              className={`mb-4 text-[10px] font-bold tracking-[0.3em] uppercase ${accentColorClass}`}
+              className="mb-4 text-[10px] font-bold tracking-[0.3em] uppercase"
+              style={{ color: "var(--dynamic-primary)" }}
             >
               Frequency Level: {level}
             </p>
             <h2
-              className={`text-[5rem] leading-none font-extrabold tracking-tighter md:text-[8rem] ${textColorClass}`}
+              className="text-[5rem] leading-none font-extrabold tracking-tighter md:text-[8rem]"
+              style={{ color: "var(--dynamic-primary)" }}
             >
               {title}
             </h2>
