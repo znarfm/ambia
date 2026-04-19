@@ -2,7 +2,8 @@
 
 import { useRef, useCallback } from "react";
 
-export type NoiseType = "white" | "pink" | "brown";
+export const NOISE_TYPES = ["white", "pink", "brown"] as const;
+export type NoiseType = (typeof NOISE_TYPES)[number];
 
 export function useNoise() {
   const audioCtx = useRef<AudioContext | null>(null);

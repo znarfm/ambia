@@ -11,7 +11,7 @@ import { Footer } from "../components/footer";
 import { NavDots } from "../components/nav-dots";
 import { AboutModal } from "../components/about-modal";
 
-import { useNoise, type NoiseType } from "../hooks/use-noise";
+import { useNoise, type NoiseType, NOISE_TYPES } from "../hooks/use-noise";
 import { useTimer } from "../hooks/use-timer";
 import { useMediaSession } from "../hooks/use-media-session";
 import { useKeyboardShortcuts } from "../hooks/use-keyboard-shortcuts";
@@ -74,8 +74,7 @@ export default function Home() {
     if (savedNoise) {
       setActiveNoise(savedNoise as NoiseType);
       setTimeout(() => {
-        const sections = ["white", "pink", "brown"];
-        const idx = sections.indexOf(savedNoise);
+        const idx = NOISE_TYPES.indexOf(savedNoise as NoiseType);
         if (idx !== -1) sectionsRef.current[idx]?.scrollIntoView({ behavior: "instant" });
       }, 0);
     }
@@ -125,11 +124,11 @@ export default function Home() {
     onPause: handlePlayPause,
     onStop: stopAll,
     onPrevious: () => {
-      const idx = (["white", "pink", "brown"].indexOf(activeNoise) - 1 + 3) % 3;
+      const idx = (NOISE_TYPES.indexOf(activeNoise) - 1 + 3) % 3;
       scrollToSection(idx);
     },
     onNext: () => {
-      const idx = (["white", "pink", "brown"].indexOf(activeNoise) + 1) % 3;
+      const idx = (NOISE_TYPES.indexOf(activeNoise) + 1) % 3;
       scrollToSection(idx);
     },
   });
@@ -137,11 +136,11 @@ export default function Home() {
   useKeyboardShortcuts({
     onPlayPause: handlePlayPause,
     onPrevSection: () => {
-      const idx = (["white", "pink", "brown"].indexOf(activeNoise) - 1 + 3) % 3;
+      const idx = (NOISE_TYPES.indexOf(activeNoise) - 1 + 3) % 3;
       scrollToSection(idx);
     },
     onNextSection: () => {
-      const idx = (["white", "pink", "brown"].indexOf(activeNoise) + 1) % 3;
+      const idx = (NOISE_TYPES.indexOf(activeNoise) + 1) % 3;
       scrollToSection(idx);
     },
     onVolUp: () => setVolume((v) => Math.min(100, v + 5)),
