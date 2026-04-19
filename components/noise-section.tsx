@@ -26,19 +26,19 @@ const BackgroundAura: React.FC<{ colors: string[] }> = ({ colors }) => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 select-none transition-opacity duration-1000 ${isDark ? "opacity-40" : "opacity-10"}`}>
-      <div className="absolute inset-0 opacity-40 [perspective:1000px] [backface-visibility:hidden]">
+    <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 select-none transition-opacity duration-1000 ${isDark ? "opacity-40 saturate-100" : "opacity-30 saturate-150"}`}>
+      <div className="absolute inset-0 [perspective:1000px] [backface-visibility:hidden]">
         <div 
-          className={`absolute -top-[25%] -left-[25%] w-[110%] h-[110%] rounded-full blur-[160px] animate-float-slow transform-gpu ${colors[0]}`}
+          className={`absolute -top-[25%] -left-[25%] w-[110%] h-[110%] rounded-full blur-[160px] animate-float-slow transform-gpu ${!isDark && colors[0].includes('white') ? 'bg-primary/30' : colors[0]}`}
           style={{ animationDelay: "0s" }}
         ></div>
         <div 
-          className={`absolute -bottom-[25%] -right-[25%] w-[100%] h-[100%] rounded-full blur-[140px] animate-float-slow transform-gpu ${colors[1] || colors[0]}`}
+          className={`absolute -bottom-[25%] -right-[25%] w-[100%] h-[100%] rounded-full blur-[140px] animate-float-slow transform-gpu ${!isDark && (colors[1] || colors[0]).includes('white') ? 'bg-primary/20' : (colors[1] || colors[0])}`}
           style={{ animationDelay: "-5s" }}
         ></div>
         {colors[2] && (
           <div 
-            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full blur-[120px] animate-pulse-slow transform-gpu ${colors[2]}`}
+            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full blur-[120px] animate-pulse-slow transform-gpu ${!isDark && colors[2].includes('white') ? 'bg-primary/25' : colors[2]}`}
           ></div>
         )}
       </div>

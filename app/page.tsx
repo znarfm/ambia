@@ -244,16 +244,16 @@ export default function Home() {
       }}
     >
       {/* Top Navigation */}
-      <header className="bg-surface z-50 flex flex-shrink-0 items-center justify-between border-b border-outline-variant/10 px-8 py-6 transition-colors duration-500">
+      <header className="bg-surface/80 sticky top-0 z-50 flex flex-shrink-0 items-center justify-between border-b border-outline-variant/10 px-8 py-5 backdrop-blur-md transition-all duration-500">
         <div className="flex items-center gap-4">
-          <Waves className="text-primary h-6 w-6" style={{ color: "var(--dynamic-primary)" }} />
+          <Waves className="text-primary h-7 w-7 transition-all duration-500" style={{ color: "var(--dynamic-primary)" }} />
         </div>
-        <h1 className="font-manrope text-on-surface text-sm font-light tracking-[0.2em] uppercase">
+        <h1 className="font-manrope text-on-surface text-xs font-bold tracking-[0.3em] uppercase opacity-80">
           AMBIA
         </h1>
         <button
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          className="text-on-surface-variant hover:text-on-surface transition-colors"
+          className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-surface-variant/50 active:scale-90"
           aria-label="Toggle theme"
         >
           {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -261,7 +261,7 @@ export default function Home() {
       </header>
 
       {/* Vertical Dot Indicator (Pagination) */}
-      <nav className="fixed top-1/2 right-8 z-40 hidden -translate-y-1/2 flex-col gap-4 md:flex">
+      <nav className="fixed top-1/2 right-10 z-40 hidden -translate-y-1/2 flex-col gap-6 md:flex">
         {["white", "pink", "brown"].map((type, idx) => (
           <button
             key={type}
@@ -270,14 +270,17 @@ export default function Home() {
             aria-label={`Scroll to ${type} noise`}
           >
             <div
-              className={`h-2 w-2 rounded-full transition-all duration-500 ${
-                activeNoise === type ? "scale-125" : "bg-white/20 hover:bg-white/40"
+              className={`h-2.5 w-2.5 rounded-full transition-all duration-500 ${
+                activeNoise === type ? "scale-125" : "bg-on-surface/20 hover:bg-on-surface/40"
               }`}
               style={{
                 backgroundColor: activeNoise === type ? "var(--dynamic-primary)" : undefined,
-                boxShadow: activeNoise === type ? "0 0 12px var(--dynamic-glow)" : undefined,
+                boxShadow: activeNoise === type ? "0 0 15px var(--dynamic-glow)" : undefined,
               }}
             ></div>
+            <span className="bg-surface text-on-surface absolute right-full mr-4 scale-90 rounded-md border border-outline-variant/10 px-2 py-1 text-[10px] font-bold opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100">
+              {type.toUpperCase()}
+            </span>
           </button>
         ))}
       </nav>
@@ -314,17 +317,17 @@ export default function Home() {
           bgClass="bg-surface-container-lowest"
           textColorClass="text-[#E3C28E]"
           description="A deep, powerful rumble. Mimics the roar of a distant ocean or the low hum of a cavernous space."
-          auraColors={["bg-amber-600/25", "bg-orange-900/20", "bg-amber-500/15"]}
+          auraColors={["bg-[#543b1f]/30", "bg-orange-950/20", "bg-amber-900/15"]}
         />
       </main>
 
       {/* Bottom Control Panel */}
-      <footer className="bg-surface-container-high safe-area-bottom z-50 flex-shrink-0 border-t border-white/5">
-        <div className="mx-auto max-w-screen-2xl px-6 py-4 md:py-6">
+      <footer className="bg-surface/80 safe-area-bottom z-50 flex-shrink-0 border-t border-outline-variant/10 backdrop-blur-lg transition-all duration-500">
+        <div className="mx-auto max-w-screen-2xl px-8 py-6 md:py-8">
           <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-3 md:gap-4">
             {/* Left: Sleep Timer */}
             <div className="order-3 flex items-center justify-center gap-3 md:order-1 md:justify-start">
-              <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/5 px-3 py-2">
+              <div className="bg-surface-variant/30 flex items-center gap-2 rounded-xl border border-outline-variant/10 px-3 py-2.5">
                 <Timer
                   className="h-4 w-4 transition-colors duration-500"
                   style={{
@@ -333,34 +336,35 @@ export default function Home() {
                 />
                 {timeLeft !== null && (
                   <span
-                    className="min-w-[40px] font-mono text-xs font-bold tabular-nums transition-colors duration-500"
+                    className="min-w-[45px] font-mono text-sm font-bold tabular-nums transition-colors duration-500"
                     style={{ color: "var(--dynamic-primary)" }}
                   >
                     {formatTime(timeLeft)}
                   </span>
                 )}
               </div>
-              <div className="flex gap-1.5">
+              <div className="flex gap-2">
                 {["15", "30", "60"].map((mins) => (
                   <button
                     key={mins}
                     onClick={() =>
                       handleTimerSelect(mins === activeTimer?.replace("M", "") ? null : mins)
                     }
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border text-[10px] font-bold tracking-tight transition-all"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl border text-[11px] font-bold tracking-tight transition-all active:scale-95"
                     style={{
                       backgroundColor:
                         activeTimer === `${mins}M`
                           ? "var(--dynamic-container)"
-                          : "rgba(255,255,255,0.05)",
+                          : "var(--color-surface-variant)",
                       borderColor:
                         activeTimer === `${mins}M`
-                          ? "rgba(255,255,255,0.1)"
-                          : "rgba(255,255,255,0.05)",
+                          ? "transparent"
+                          : "var(--color-outline-variant)",
                       color:
                         activeTimer === `${mins}M`
                           ? "var(--dynamic-primary)"
                           : "var(--color-on-surface-variant)",
+                      opacity: activeTimer === `${mins}M` ? 1 : 0.6,
                     }}
                   >
                     {mins}
@@ -368,7 +372,7 @@ export default function Home() {
                 ))}
                 <button
                   onClick={() => setIsTimerModalOpen(true)}
-                  className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-xl border border-white/5 bg-white/5 transition-all hover:bg-white/10"
+                  className="text-on-surface-variant hover:text-on-surface bg-surface-variant flex h-11 w-11 items-center justify-center rounded-xl border border-outline-variant transition-all hover:bg-surface-variant/80 active:scale-95"
                   style={{
                     backgroundColor:
                       activeTimer && !["15", "30", "60"].map((m) => `${m}M`).includes(activeTimer!)
@@ -381,12 +385,12 @@ export default function Home() {
                   }}
                   aria-label="Set custom timer"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-5 w-5" />
                 </button>
                 {timeLeft !== null && (
                   <button
                     onClick={() => handleTimerSelect(null)}
-                    className="bg-error/10 border-error/20 text-error hover:bg-error/20 flex h-10 w-10 items-center justify-center rounded-xl border text-[10px] font-bold transition-all"
+                    className="bg-error/10 border-error/20 text-error hover:bg-error/20 flex h-11 w-11 items-center justify-center rounded-xl border text-[11px] font-bold transition-all active:scale-95"
                   >
                     OFF
                   </button>
