@@ -22,6 +22,7 @@ export function Header({ resolvedTheme, setTheme, setIsAboutModalOpen, isMounted
           setIsAboutModalOpen(true);
         }}
         className="group flex items-center gap-3 transition-all"
+        aria-label="Ambia - About and Settings"
       >
         <Waves
           className="text-primary h-7 w-7 transition-all duration-500"

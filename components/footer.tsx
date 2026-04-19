@@ -75,16 +75,17 @@ export function Footer({
                     color:
                       activeTimer === `${mins}M`
                         ? "var(--dynamic-primary)"
-                        : "var(--color-on-surface-variant)",
-                    opacity: activeTimer === `${mins}M` ? 1 : 0.6,
+                        : "var(--color-on-surface)",
+                    opacity: activeTimer === `${mins}M` ? 1 : 1,
                   }}
+                  aria-label={`${mins} minute sleep timer`}
                 >
                   {mins}
                 </button>
               ))}
               <button
                 onClick={() => setIsTimerModalOpen(true)}
-                className="text-on-surface-variant hover:text-on-surface bg-surface-variant border-outline-variant hover:bg-surface-variant/80 flex h-11 w-11 items-center justify-center rounded-xl border transition-all active:scale-95"
+                className="text-on-surface hover:text-primary bg-surface-variant border-outline-variant hover:bg-surface-variant/80 flex h-11 w-11 items-center justify-center rounded-xl border transition-all active:scale-95"
                 style={{
                   backgroundColor:
                     activeTimer && !["15", "30", "60"].map((m) => `${m}M`).includes(activeTimer!)
@@ -103,6 +104,7 @@ export function Footer({
                 <button
                   onClick={() => handleTimerSelect(null)}
                   className="bg-error/10 border-error/20 text-error hover:bg-error/20 flex h-11 w-11 items-center justify-center rounded-xl border text-[11px] font-bold transition-all active:scale-95"
+                  aria-label="Turn off timer"
                 >
                   OFF
                 </button>
@@ -132,7 +134,7 @@ export function Footer({
                 color: "var(--dynamic-text)",
                 boxShadow: `0 20px 25px -5px var(--dynamic-glow)`,
               }}
-              aria-label={isPlaying ? "Pause" : "Play"}
+              aria-label={isPlaying ? "Pause noise" : "Play noise"}
             >
               {isPlaying ? (
                 <Pause className="relative z-10 h-8 w-8 fill-current" />
@@ -147,7 +149,7 @@ export function Footer({
                 const idx = types.indexOf(activeNoise);
                 scrollToSection((idx + 1) % 3);
               }}
-              className="text-on-surface-variant hover:text-on-surface p-2 transition-colors active:scale-90"
+              className="text-on-surface p-2 transition-colors active:scale-90"
               aria-label="Next noise type"
             >
               <SkipForward className="h-5 w-5 fill-current" />
@@ -162,7 +164,8 @@ export function Footer({
             >
               <button
                 onClick={() => setVolume(0)}
-                className="text-on-surface-variant hover:text-on-surface transition-colors"
+                className="text-on-surface transition-colors"
+                aria-label="Mute volume"
               >
                 {volume === 0 ? (
                   <Volume1 className="text-error h-4 w-4" />
@@ -193,7 +196,8 @@ export function Footer({
 
               <button
                 onClick={() => setVolume(100)}
-                className="text-on-surface-variant hover:text-on-surface transition-colors"
+                className="text-on-surface transition-colors"
+                aria-label="Maximum volume"
               >
                 <Volume2 className="h-4 w-4" />
               </button>

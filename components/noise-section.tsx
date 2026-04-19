@@ -46,7 +46,7 @@ export const NoiseSection = React.memo(
         description,
         bgClass,
         textColorClass = "text-on-surface",
-        accentColorClass = "text-primary/60",
+        accentColorClass = "text-primary",
         decorative,
         overlayGradient,
         auraColors = ["bg-white/5", "bg-white/5"],

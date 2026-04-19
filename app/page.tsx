@@ -206,7 +206,7 @@ export default function Home() {
           title="PINK"
           level="Mid"
           bgClass="bg-surface-container-low"
-          textColorClass="text-[#FFB2BB]"
+          textColorClass="text-on-surface"
           description="Balanced and natural, mimicking the steady rhythm of rainfall or wind through heavy autumn leaves."
           auraColors={["bg-rose-400/20", "bg-amber-300/10", "bg-rose-500/10"]}
         />
@@ -218,7 +218,7 @@ export default function Home() {
           title="BROWN"
           level="Deep"
           bgClass="bg-surface-container-lowest"
-          textColorClass="text-[#E3C28E]"
+          textColorClass="text-on-surface"
           description="A deep, powerful rumble. Mimics the roar of a distant ocean or the low hum of a cavernous space."
           auraColors={["bg-[#543b1f]/30", "bg-orange-950/20", "bg-amber-900/15"]}
         />
