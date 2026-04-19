@@ -113,6 +113,7 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [timeLeft, stop, isMounted]);
 
+
   const formatTime = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -199,6 +200,48 @@ export default function Home() {
       return Math.max(0, Math.min(100, prev + delta));
     });
   }, []);
+
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      switch (e.key.toLowerCase()) {
+        case " ":
+          e.preventDefault();
+          handlePlayPause();
+          break;
+        case "arrowup":
+          e.preventDefault();
+          setVolume((v) => Math.min(100, v + 5));
+          break;
+        case "arrowdown":
+          e.preventDefault();
+          setVolume((v) => Math.max(0, v - 5));
+          break;
+        case "arrowleft":
+          e.preventDefault();
+          const prevIdx = (["white", "pink", "brown"].indexOf(activeNoise) - 1 + 3) % 3;
+          scrollToSection(prevIdx);
+          break;
+        case "arrowright":
+          e.preventDefault();
+          const nextIdx = (["white", "pink", "brown"].indexOf(activeNoise) + 1) % 3;
+          scrollToSection(nextIdx);
+          break;
+        case "m":
+          setTheme(resolvedTheme === "dark" ? "light" : "dark");
+          break;
+        case "t":
+          setIsTimerModalOpen(true);
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handlePlayPause, activeNoise, scrollToSection, setTheme, resolvedTheme, setIsTimerModalOpen]);
 
   const getDynamicColors = () => {
     const isDark = resolvedTheme === "dark";
