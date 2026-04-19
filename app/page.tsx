@@ -17,16 +17,118 @@ import { useNoise, type NoiseType } from "./use-noise";
 import { TimerModal } from "./timer-modal";
 
 export default function Home() {
+  const [isMounted, setIsMounted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(65);
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
-  const [activeTimer, setActiveTimer] = useState("30M");
+  const [activeTimer, setActiveTimer] = useState<string | null>(null);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [activeNoise, setActiveNoise] = useState<NoiseType>("white");
 
   const { start, stop, setVolume: setAudioVolume } = useNoise();
 
+  // Load state from localStorage on mount
+  useEffect(() => {
+    setIsMounted(true);
+    const savedVolume = localStorage.getItem("ambia_volume");
+    if (savedVolume) setVolume(parseInt(savedVolume));
+
+    const savedNoise = localStorage.getItem("ambia_noise");
+    if (savedNoise) {
+      setActiveNoise(savedNoise as NoiseType);
+      // Wait for DOM
+      setTimeout(() => {
+        const sections = ["white", "pink", "brown"];
+        const idx = sections.indexOf(savedNoise);
+        if (idx !== -1) {
+          document.querySelectorAll(".snap-section")[idx]?.scrollIntoView({ behavior: "instant" });
+        }
+      }, 0);
+    }
+
+    const savedEndTime = localStorage.getItem("ambia_timer_end");
+    if (savedEndTime) {
+      const endTime = parseInt(savedEndTime);
+      const remaining = Math.floor((endTime - Date.now()) / 1000);
+      if (remaining > 0) {
+        setTimeLeft(remaining);
+        setActiveTimer(localStorage.getItem("ambia_timer_label"));
+      } else {
+        localStorage.removeItem("ambia_timer_end");
+        localStorage.removeItem("ambia_timer_label");
+      }
+    }
+  }, []);
+
+  // Persist Volume
+  useEffect(() => {
+    if (!isMounted) return;
+    localStorage.setItem("ambia_volume", volume.toString());
+    setAudioVolume(volume);
+  }, [volume, setAudioVolume, isMounted]);
+
+  // Persist Noise Selection
+  useEffect(() => {
+    if (!isMounted) return;
+    localStorage.setItem("ambia_noise", activeNoise);
+  }, [activeNoise, isMounted]);
+
+  // Sleep Timer Countdown Logic
+  useEffect(() => {
+    if (timeLeft === null) {
+      if (isMounted) {
+        localStorage.removeItem("ambia_timer_end");
+        localStorage.removeItem("ambia_timer_label");
+      }
+      return;
+    }
+
+    if (timeLeft <= 0) {
+      setIsPlaying(false);
+      stop();
+      setTimeLeft(null);
+      setActiveTimer(null);
+      if (isMounted) {
+        localStorage.removeItem("ambia_timer_end");
+        localStorage.removeItem("ambia_timer_label");
+      }
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft, stop, isMounted]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const handleTimerSelect = (timeStr: string | null) => {
+    if (timeStr === null) {
+      setTimeLeft(null);
+      setActiveTimer(null);
+      return;
+    }
+    const mins = parseInt(timeStr);
+    const durationSecs = mins * 60;
+    const endTime = Date.now() + durationSecs * 1000;
+    
+    setTimeLeft(durationSecs);
+    setActiveTimer(timeStr);
+    if (isMounted) {
+      localStorage.setItem("ambia_timer_end", endTime.toString());
+      localStorage.setItem("ambia_timer_label", timeStr);
+    }
+  };
+
   // Intersection Observer for active noise sync
   useEffect(() => {
+    if (!isMounted) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -42,7 +144,7 @@ export default function Home() {
     sections.forEach((section) => observer.observe(section));
 
     return () => observer.disconnect();
-  }, []);
+  }, [isMounted]);
 
   const handlePlayPause = useCallback(() => {
     const nextState = !isPlaying;
@@ -56,15 +158,17 @@ export default function Home() {
 
   // Sync audio when noise type changes while playing
   useEffect(() => {
-    if (isPlaying) {
+    if (isPlaying && isMounted) {
       start(activeNoise, volume);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeNoise, isPlaying]);
+  }, [activeNoise, isPlaying, isMounted]);
 
   useEffect(() => {
-    setAudioVolume(volume);
-  }, [volume, setAudioVolume]);
+    if (isMounted) {
+      setAudioVolume(volume);
+    }
+  }, [volume, setAudioVolume, isMounted]);
 
   const scrollToSection = useCallback((index: number) => {
     const sections = document.querySelectorAll(".snap-section");
@@ -79,7 +183,7 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <div className={`min-h-screen flex flex-col transition-opacity duration-300 ${isMounted ? "opacity-100" : "opacity-0"}`}>
       {/* Fixed Top Navigation */}
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-6 bg-surface/80 backdrop-blur-md border-b border-white/5">
         <div className="flex items-center gap-4">
@@ -92,7 +196,7 @@ export default function Home() {
       </header>
 
       {/* Main Content: Snap Scroll Sections */}
-      <main className="snap-container">
+      <main className="snap-container flex-grow">
         <NoiseSection
           id="white"
           title="WHITE"
@@ -126,17 +230,24 @@ export default function Home() {
       </main>
 
       {/* Persistent Bottom Control Panel */}
-      <footer className="bg-surface-container-high border-t border-white/5 z-50">
+      <footer className="fixed bottom-0 left-0 w-full bg-surface-container-high/90 backdrop-blur-lg border-t border-white/5 z-50">
         <div className="max-w-screen-xl mx-auto px-6 py-6 flex flex-col gap-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Sleep Timer */}
-            <div className="flex items-center gap-2">
-              <Timer className="text-secondary-dim w-5 h-5" />
-              <div className="flex gap-2">
+            <div className="flex items-center gap-2 min-w-[300px]">
+              <div className="flex items-center gap-2">
+                <Timer className={`w-5 h-5 ${timeLeft ? "text-primary animate-pulse" : "text-secondary-dim"}`} />
+                {timeLeft !== null && (
+                  <span className="text-[10px] font-mono font-bold text-primary tabular-nums">
+                    {formatTime(timeLeft)}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-1.5 ml-2">
                 {["15M", "30M", "60M"].map((time) => (
                   <button
                     key={time}
-                    onClick={() => setActiveTimer(time)}
+                    onClick={() => handleTimerSelect(time === activeTimer ? null : time)}
                     className={`px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest transition-all ${
                       activeTimer === time
                         ? "bg-primary-container text-primary"
@@ -148,11 +259,21 @@ export default function Home() {
                 ))}
                 <button 
                   onClick={() => setIsTimerModalOpen(true)}
-                  className="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface hover:bg-primary/20 transition-all flex items-center justify-center"
+                  className={`px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface hover:bg-primary/20 transition-all flex items-center justify-center ${
+                    activeTimer && !["15M", "30M", "60M"].includes(activeTimer) ? "bg-primary-container text-primary" : ""
+                  }`}
                   aria-label="Set custom timer"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
+                {timeLeft !== null && (
+                  <button 
+                    onClick={() => handleTimerSelect(null)}
+                    className="px-3 py-1.5 rounded-lg bg-error-dim/20 text-error-dim hover:bg-error-dim/30 transition-all text-[10px] font-bold tracking-widest"
+                  >
+                    OFF
+                  </button>
+                )}
               </div>
             </div>
 
@@ -227,7 +348,15 @@ export default function Home() {
       <TimerModal 
         isOpen={isTimerModalOpen} 
         onClose={() => setIsTimerModalOpen(false)} 
+        onSetCustomTimer={(mins) => {
+          const durationSecs = mins * 60;
+          const endTime = Date.now() + durationSecs * 1000;
+          setTimeLeft(durationSecs);
+          setActiveTimer(`${mins}M`);
+          localStorage.setItem("ambia_timer_end", endTime.toString());
+          localStorage.setItem("ambia_timer_label", `${mins}M`);
+        }}
       />
-    </>
+    </div>
   );
 }

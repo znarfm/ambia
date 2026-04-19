@@ -22,7 +22,7 @@ export function useNoise() {
 
     if (type === "white") {
       for (let i = 0; i < bufferSize; i++) {
-        output[i] = (Math.random() * 2 - 1) * 0.4; // Reduced base gain
+        output[i] = (Math.random() * 2 - 1) * 0.4;
       }
     } else if (type === "pink") {
       let b0, b1, b2, b3, b4, b5, b6;
@@ -44,7 +44,7 @@ export function useNoise() {
       for (let i = 0; i < bufferSize; i++) {
         let white = Math.random() * 2 - 1;
         let out = (lastOut + (0.02 * white)) / 1.02;
-        output[i] = out * 3.5; // Integration scaling
+        output[i] = out * 3.5;
         lastOut = out;
       }
     }
@@ -67,8 +67,7 @@ export function useNoise() {
       audioCtx.current.resume();
     }
 
-    // Exponential volume mapping for more control at low levels
-    const gainValue = Math.pow(volume / 100, 2) * 0.7; // Master gain 0.7
+    const gainValue = Math.pow(volume / 100, 2) * 0.7;
     gainNode.current!.gain.setValueAtTime(gainValue, audioCtx.current.currentTime);
 
     if (sourceNode.current) {

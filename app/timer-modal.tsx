@@ -1,15 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { X } from "lucide-react";
 
 interface TimerModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSetCustomTimer: (minutes: number) => void;
 }
 
-export const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose }) => {
+export const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSetCustomTimer }) => {
+  const [customValue, setCustomValue] = useState("");
+
   if (!isOpen) return null;
+
+  const handleSubmit = () => {
+    const mins = parseInt(customValue);
+    if (!isNaN(mins) && mins > 0) {
+      onSetCustomTimer(mins);
+      setCustomValue("");
+      onClose();
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
@@ -41,12 +53,16 @@ export const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose }) => {
               id="duration"
               type="number" 
               placeholder="e.g. 45"
+              value={customValue}
+              onChange={(e) => setCustomValue(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
               className="bg-surface-container-highest border border-white/5 rounded-xl px-4 py-3 outline-none focus:border-primary/30 transition-colors"
+              autoFocus
             />
           </div>
           
           <button 
-            onClick={onClose}
+            onClick={handleSubmit}
             className="w-full py-4 bg-primary text-zinc-950 font-bold rounded-xl hover:bg-primary-dim transition-colors"
           >
             Set Timer
