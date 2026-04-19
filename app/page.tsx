@@ -182,12 +182,55 @@ export default function Home() {
     });
   }, []);
 
+  const getDynamicColors = () => {
+    switch (activeNoise) {
+      case "white":
+        return {
+          primary: "#FFFFFF",
+          container: "rgba(255, 255, 255, 0.15)",
+          text: "#000000",
+          glow: "rgba(255, 255, 255, 0.4)"
+        };
+      case "pink":
+        return {
+          primary: "#FFB2BB",
+          container: "rgba(255, 178, 187, 0.2)",
+          text: "#2D1619",
+          glow: "rgba(255, 178, 187, 0.4)"
+        };
+      case "brown":
+        return {
+          primary: "#E3C28E",
+          container: "rgba(227, 194, 142, 0.2)",
+          text: "#2D1F0E",
+          glow: "rgba(227, 194, 142, 0.4)"
+        };
+      default:
+        return {
+          primary: "#E3C28E",
+          container: "rgba(227, 194, 142, 0.2)",
+          text: "#2D1F0E",
+          glow: "rgba(227, 194, 142, 0.4)"
+        };
+    }
+  };
+
+  const colors = getDynamicColors();
+
   return (
-    <div className={`min-h-screen flex flex-col transition-opacity duration-300 ${isMounted ? "opacity-100" : "opacity-0"}`}>
-      {/* Fixed Top Navigation */}
-      <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-6 bg-surface/80 backdrop-blur-md border-b border-white/5">
+    <div 
+      className={`h-screen flex flex-col transition-all duration-700 ${isMounted ? "opacity-100" : "opacity-0"}`}
+      style={{ 
+        ["--dynamic-primary" as string]: colors.primary,
+        ["--dynamic-container" as string]: colors.container,
+        ["--dynamic-text" as string]: colors.text,
+        ["--dynamic-glow" as string]: colors.glow,
+      }}
+    >
+      {/* Top Navigation */}
+      <header className="flex-shrink-0 flex justify-between items-center px-8 py-6 bg-surface border-b border-white/5 z-50">
         <div className="flex items-center gap-4">
-          <Waves className="text-primary w-6 h-6" />
+          <Waves className="text-primary w-6 h-6" style={{ color: "var(--dynamic-primary)" }} />
         </div>
         <h1 className="font-manrope uppercase tracking-[0.2em] text-sm font-light text-on-surface">
           AMBIA
@@ -204,24 +247,28 @@ export default function Home() {
             className="group relative flex items-center justify-center p-2"
             aria-label={`Scroll to ${type} noise`}
           >
-            <div className={`w-2 h-2 rounded-full transition-all duration-500 ${
-              activeNoise === type 
-                ? "bg-primary scale-125 shadow-[0_0_12px_rgba(227,194,142,0.6)]" 
-                : "bg-white/20 hover:bg-white/40"
-            }`}></div>
+            <div 
+              className={`w-2 h-2 rounded-full transition-all duration-500 ${
+                activeNoise === type ? "scale-125" : "bg-white/20 hover:bg-white/40"
+              }`}
+              style={{ 
+                backgroundColor: activeNoise === type ? "var(--dynamic-primary)" : undefined,
+                boxShadow: activeNoise === type ? "0 0 12px var(--dynamic-glow)" : undefined 
+              }}
+            ></div>
           </button>
         ))}
       </nav>
 
       {/* Main Content: Snap Scroll Sections */}
-      <main className="snap-container flex-grow">
+      <main className="snap-container flex-grow overflow-y-auto">
         <NoiseSection
           id="white"
           title="WHITE"
           level="High"
           index="01"
           bgClass="bg-surface"
-          overlayGradient="bg-gradient-to-b from-primary/10 to-transparent"
+          overlayGradient="bg-gradient-to-b from-white/10 to-transparent"
           description="A static, pure wall of sound. Designed to mask sharp environmental interruptions and sharpen focus."
         />
 
@@ -231,7 +278,7 @@ export default function Home() {
           level="Mid"
           index="02"
           bgClass="bg-surface-container-low"
-          textColorClass="text-primary"
+          textColorClass="text-[#FFB2BB]"
           description="Balanced and natural, mimicking the steady rhythm of rainfall or wind through heavy autumn leaves."
         />
 
@@ -241,23 +288,22 @@ export default function Home() {
           level="Deep"
           index="03"
           bgClass="bg-surface-container-lowest"
-          textColorClass="text-on-primary-container"
-          accentColorClass="text-primary-dim"
+          textColorClass="text-[#E3C28E]"
           description="A deep, powerful rumble. Mimics the roar of a distant ocean or the low hum of a cavernous space."
         />
       </main>
 
-      {/* Persistent Bottom Control Panel */}
-      <footer className="fixed bottom-0 left-0 w-full bg-surface-container-high/90 backdrop-blur-xl border-t border-white/5 z-50 safe-area-bottom">
+      {/* Bottom Control Panel */}
+      <footer className="flex-shrink-0 bg-surface-container-high border-t border-white/5 z-50 safe-area-bottom">
         <div className="max-w-screen-2xl mx-auto px-6 py-4 md:py-6">
           <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 md:gap-4">
             
             {/* Left: Sleep Timer */}
             <div className="flex items-center justify-center md:justify-start gap-3 order-3 md:order-1">
               <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/5">
-                <Timer className={`w-4 h-4 ${timeLeft ? "text-primary animate-pulse" : "text-on-surface-variant"}`} />
+                <Timer className="w-4 h-4 transition-colors duration-500" style={{ color: timeLeft ? "var(--dynamic-primary)" : "var(--color-on-surface-variant)" }} />
                 {timeLeft !== null && (
-                  <span className="text-xs font-mono font-bold text-primary tabular-nums min-w-[40px]">
+                  <span className="text-xs font-mono font-bold tabular-nums min-w-[40px] transition-colors duration-500" style={{ color: "var(--dynamic-primary)" }}>
                     {formatTime(timeLeft)}
                   </span>
                 )}
@@ -267,20 +313,23 @@ export default function Home() {
                   <button
                     key={mins}
                     onClick={() => handleTimerSelect(mins === activeTimer?.replace("M", "") ? null : mins)}
-                    className={`w-10 h-10 flex items-center justify-center rounded-xl text-[10px] font-bold tracking-tight transition-all border ${
-                      activeTimer === `${mins}M`
-                        ? "bg-primary-container border-primary/20 text-primary shadow-sm shadow-primary/10"
-                        : "bg-white/5 border-white/5 text-on-surface-variant hover:bg-white/10 hover:text-on-surface"
-                    }`}
+                    className="w-10 h-10 flex items-center justify-center rounded-xl text-[10px] font-bold tracking-tight transition-all border"
+                    style={{ 
+                      backgroundColor: activeTimer === `${mins}M` ? "var(--dynamic-container)" : "rgba(255,255,255,0.05)",
+                      borderColor: activeTimer === `${mins}M` ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.05)",
+                      color: activeTimer === `${mins}M` ? "var(--dynamic-primary)" : "var(--color-on-surface-variant)"
+                    }}
                   >
                     {mins}
                   </button>
                 ))}
                 <button 
                   onClick={() => setIsTimerModalOpen(true)}
-                  className={`w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/5 text-on-surface-variant hover:bg-white/10 hover:text-on-surface transition-all ${
-                    activeTimer && !["15M", "30M", "60M"].includes(activeTimer) ? "bg-primary-container border-primary/20 text-primary" : ""
-                  }`}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/5 text-on-surface-variant hover:bg-white/10 hover:text-on-surface transition-all"
+                  style={{ 
+                    backgroundColor: activeTimer && !["15", "30", "60"].map(m => `${m}M`).includes(activeTimer!) ? "var(--dynamic-container)" : undefined,
+                    color: activeTimer && !["15", "30", "60"].map(m => `${m}M`).includes(activeTimer!) ? "var(--dynamic-primary)" : undefined 
+                  }}
                   aria-label="Set custom timer"
                 >
                   <Plus className="w-4 h-4" />
@@ -304,7 +353,7 @@ export default function Home() {
                   const idx = types.indexOf(activeNoise);
                   scrollToSection((idx - 1 + 3) % 3);
                 }}
-                className="p-2 text-on-surface-variant hover:text-primary transition-colors active:scale-90"
+                className="p-2 text-on-surface-variant hover:text-on-surface transition-colors active:scale-90"
                 aria-label="Previous noise type"
               >
                 <SkipBack className="w-5 h-5 fill-current" />
@@ -312,7 +361,12 @@ export default function Home() {
               
               <button 
                 onClick={handlePlayPause}
-                className="w-16 h-16 rounded-full bg-primary text-zinc-950 flex items-center justify-center shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all group relative"
+                className="w-16 h-16 rounded-full flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all group relative"
+                style={{ 
+                  backgroundColor: "var(--dynamic-primary)",
+                  color: "var(--dynamic-text)",
+                  boxShadow: `0 20px 25px -5px var(--dynamic-glow)`
+                }}
                 aria-label={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? (
@@ -328,7 +382,7 @@ export default function Home() {
                   const idx = types.indexOf(activeNoise);
                   scrollToSection((idx + 1) % 3);
                 }}
-                className="p-2 text-on-surface-variant hover:text-primary transition-colors active:scale-90"
+                className="p-2 text-on-surface-variant hover:text-on-surface transition-colors active:scale-90"
                 aria-label="Next noise type"
               >
                 <SkipForward className="w-5 h-5 fill-current" />
@@ -359,8 +413,11 @@ export default function Home() {
                     aria-label="Volume slider"
                   />
                   <div 
-                    className="absolute left-0 top-0 h-full bg-primary transition-all duration-75"
-                    style={{ width: `${volume}%` }}
+                    className="absolute left-0 top-0 h-full transition-all duration-75"
+                    style={{ 
+                      width: `${volume}%`,
+                      backgroundColor: "var(--dynamic-primary)"
+                    }}
                   ></div>
                 </div>
 
