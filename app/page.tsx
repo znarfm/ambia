@@ -21,6 +21,12 @@ const TimerModal = dynamic(
   { ssr: false },
 );
 
+const AURA_COLORS = {
+  white: ["bg-white/20", "bg-sky-400/10", "bg-white/10"],
+  pink: ["bg-rose-400/30", "bg-rose-300/15", "bg-rose-500/15"],
+  brown: ["bg-orange-900/30", "bg-orange-950/20", "bg-amber-900/15"],
+};
+
 export default function Home() {
   const haptic = useWebHaptics();
   const { setTheme, resolvedTheme } = useTheme();
@@ -63,18 +69,16 @@ export default function Home() {
     const savedVolume = localStorage.getItem("ambia_volume");
     const savedNoise = localStorage.getItem("ambia_noise");
 
-    requestAnimationFrame(() => {
-      setIsMounted(true);
-      if (savedVolume) setVolume(parseInt(savedVolume));
-      if (savedNoise) {
-        setActiveNoise(savedNoise as NoiseType);
-        setTimeout(() => {
-          const sections = ["white", "pink", "brown"];
-          const idx = sections.indexOf(savedNoise);
-          if (idx !== -1) sectionsRef.current[idx]?.scrollIntoView({ behavior: "instant" });
-        }, 0);
-      }
-    });
+    setIsMounted(true);
+    if (savedVolume) setVolume(parseInt(savedVolume));
+    if (savedNoise) {
+      setActiveNoise(savedNoise as NoiseType);
+      setTimeout(() => {
+        const sections = ["white", "pink", "brown"];
+        const idx = sections.indexOf(savedNoise);
+        if (idx !== -1) sectionsRef.current[idx]?.scrollIntoView({ behavior: "instant" });
+      }, 0);
+    }
   }, []);
 
   useEffect(() => {
@@ -196,7 +200,7 @@ export default function Home() {
           bgClass="bg-surface"
           overlayGradient="bg-gradient-to-b from-white/10 to-transparent"
           description="A static, pure wall of sound. Designed to mask sharp environmental interruptions and sharpen focus."
-          auraColors={["bg-white/30", "bg-sky-400/20", "bg-white/20"]}
+          auraColors={AURA_COLORS.white}
         />
         <NoiseSection
           ref={(el) => {
@@ -207,7 +211,7 @@ export default function Home() {
           level="Mid"
           bgClass="bg-surface-container-low"
           description="Balanced and natural, mimicking the steady rhythm of rainfall or wind through heavy autumn leaves."
-          auraColors={["bg-rose-400/40", "bg-rose-300/20", "bg-rose-500/20"]}
+          auraColors={AURA_COLORS.pink}
         />
         <NoiseSection
           ref={(el) => {
@@ -218,7 +222,7 @@ export default function Home() {
           level="Deep"
           bgClass="bg-surface-container-lowest"
           description="A deep, powerful rumble. Mimics the roar of a distant ocean or the low hum of a cavernous space."
-          auraColors={["bg-orange-900/40", "bg-orange-950/30", "bg-amber-900/20"]}
+          auraColors={AURA_COLORS.brown}
         />
       </main>
 
