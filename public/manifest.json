@@ -1,27 +1,23 @@
 {
   "name": "Ambia",
   "short_name": "Ambia",
-  "description": "Ambia Progressive Web App",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "description": "Procedural noise generator",
   "icons": [
     {
       "src": "/icon-192",
       "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512",
-      "sizes": "512x512",
-      "type": "image/png"
-    },
-    {
-      "src": "/icon-512",
-      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512",
+      "sizes": "512x512",
+      "type": "image/png"
     }
-  ]
+  ],
+  "theme_color": "#0e0e0e",
+  "background_color": "#0e0e0e",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
 }

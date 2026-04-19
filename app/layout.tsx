@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
-import { PWARegistration } from "../components/pwa-registration";
 import { ThemeProvider } from "../components/theme-provider";
+import { SerwistProvider } from "./serwist";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -11,16 +11,46 @@ const manrope = Manrope({
   display: "swap",
 });
 
+const APP_NAME = "Ambia";
+const APP_DEFAULT_TITLE = "Ambia | Sensory Sanctuary";
+const APP_TITLE_TEMPLATE = "%s - Ambia";
+const APP_DESCRIPTION =
+  "Immersive procedural white, pink, and brown noise for focus, sleep, and relaxation.";
+
 export const metadata: Metadata = {
-  title: "Ambia | Sensory Soundscapes",
-  description:
-    "Immersive procedural white, pink, and brown noise for focus, sleep, and relaxation.",
-  keywords: ["white noise", "pink noise", "brown noise", "focus", "sleep", "ambient", "sensory"],
-  authors: [{ name: "Ambia Team" }],
+  metadataBase: new URL(
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000",
+  ),
+  applicationName: APP_NAME,
+  title: {
+    default: APP_DEFAULT_TITLE,
+    template: APP_TITLE_TEMPLATE,
+  },
+  description: APP_DESCRIPTION,
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: APP_DEFAULT_TITLE,
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
-    title: "Ambia | Sensory Soundscapes",
-    description: "Your procedural sanctuary for focus and rest.",
     type: "website",
+    siteName: APP_NAME,
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE,
+    },
+    description: APP_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary",
+    title: {
+      default: APP_DEFAULT_TITLE,
+      template: APP_TITLE_TEMPLATE,
+    },
+    description: APP_DESCRIPTION,
   },
   manifest: "/manifest.json",
 };
@@ -40,10 +70,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="flex min-h-full flex-col">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-          <PWARegistration />
-        </ThemeProvider>
+        <SerwistProvider swUrl="/serwist/sw.js">
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+          </ThemeProvider>
+        </SerwistProvider>
       </body>
     </html>
   );
