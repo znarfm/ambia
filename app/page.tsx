@@ -327,21 +327,21 @@ export default function Home() {
           break;
         case "arrowup":
           e.preventDefault();
-          setVolume((v) => Math.min(100, v + 5));
-          break;
-        case "arrowdown":
-          e.preventDefault();
-          setVolume((v) => Math.max(0, v - 5));
-          break;
-        case "arrowleft":
-          e.preventDefault();
           const prevIdx = (["white", "pink", "brown"].indexOf(activeNoise) - 1 + 3) % 3;
           scrollToSection(prevIdx);
           break;
-        case "arrowright":
+        case "arrowdown":
           e.preventDefault();
           const nextIdx = (["white", "pink", "brown"].indexOf(activeNoise) + 1) % 3;
           scrollToSection(nextIdx);
+          break;
+        case "arrowleft":
+          e.preventDefault();
+          setVolume((v) => Math.max(0, v - 5));
+          break;
+        case "arrowright":
+          e.preventDefault();
+          setVolume((v) => Math.min(100, v + 5));
           break;
         case "m":
           setTheme(resolvedTheme === "dark" ? "light" : "dark");
