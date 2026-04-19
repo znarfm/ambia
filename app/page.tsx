@@ -230,37 +230,38 @@ export default function Home() {
       </main>
 
       {/* Persistent Bottom Control Panel */}
-      <footer className="fixed bottom-0 left-0 w-full bg-surface-container-high/90 backdrop-blur-lg border-t border-white/5 z-50">
-        <div className="max-w-screen-xl mx-auto px-6 py-6 flex flex-col gap-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            {/* Sleep Timer */}
-            <div className="flex items-center gap-2 min-w-[300px]">
-              <div className="flex items-center gap-2">
-                <Timer className={`w-5 h-5 ${timeLeft ? "text-primary animate-pulse" : "text-secondary-dim"}`} />
+      <footer className="fixed bottom-0 left-0 w-full bg-surface-container-high/90 backdrop-blur-xl border-t border-white/5 z-50 safe-area-bottom">
+        <div className="max-w-screen-2xl mx-auto px-6 py-4 md:py-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 md:gap-4">
+            
+            {/* Left: Sleep Timer */}
+            <div className="flex items-center justify-center md:justify-start gap-3 order-3 md:order-1">
+              <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/5">
+                <Timer className={`w-4 h-4 ${timeLeft ? "text-primary animate-pulse" : "text-on-surface-variant"}`} />
                 {timeLeft !== null && (
-                  <span className="text-[10px] font-mono font-bold text-primary tabular-nums">
+                  <span className="text-xs font-mono font-bold text-primary tabular-nums min-w-[40px]">
                     {formatTime(timeLeft)}
                   </span>
                 )}
               </div>
-              <div className="flex gap-1.5 ml-2">
-                {["15M", "30M", "60M"].map((time) => (
+              <div className="flex gap-1.5">
+                {["15", "30", "60"].map((mins) => (
                   <button
-                    key={time}
-                    onClick={() => handleTimerSelect(time === activeTimer ? null : time)}
-                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold tracking-widest transition-all ${
-                      activeTimer === time
-                        ? "bg-primary-container text-primary"
-                        : "bg-surface-container-highest text-on-surface hover:bg-primary/20"
+                    key={mins}
+                    onClick={() => handleTimerSelect(mins === activeTimer?.replace("M", "") ? null : mins)}
+                    className={`w-10 h-10 flex items-center justify-center rounded-xl text-[10px] font-bold tracking-tight transition-all border ${
+                      activeTimer === `${mins}M`
+                        ? "bg-primary-container border-primary/20 text-primary shadow-sm shadow-primary/10"
+                        : "bg-white/5 border-white/5 text-on-surface-variant hover:bg-white/10 hover:text-on-surface"
                     }`}
                   >
-                    {time}
+                    {mins}
                   </button>
                 ))}
                 <button 
                   onClick={() => setIsTimerModalOpen(true)}
-                  className={`px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface hover:bg-primary/20 transition-all flex items-center justify-center ${
-                    activeTimer && !["15M", "30M", "60M"].includes(activeTimer) ? "bg-primary-container text-primary" : ""
+                  className={`w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/5 text-on-surface-variant hover:bg-white/10 hover:text-on-surface transition-all ${
+                    activeTimer && !["15M", "30M", "60M"].includes(activeTimer) ? "bg-primary-container border-primary/20 text-primary" : ""
                   }`}
                   aria-label="Set custom timer"
                 >
@@ -269,7 +270,7 @@ export default function Home() {
                 {timeLeft !== null && (
                   <button 
                     onClick={() => handleTimerSelect(null)}
-                    className="px-3 py-1.5 rounded-lg bg-error-dim/20 text-error-dim hover:bg-error-dim/30 transition-all text-[10px] font-bold tracking-widest"
+                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-error/10 border border-error/20 text-error hover:bg-error/20 transition-all text-[10px] font-bold"
                   >
                     OFF
                   </button>
@@ -277,70 +278,83 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Playback Center */}
-            <div className="flex items-center gap-6">
+            {/* Center: Playback Controls */}
+            <div className="flex items-center justify-center gap-8 order-1 md:order-2">
               <button 
                 onClick={() => {
                   const types: NoiseType[] = ["white", "pink", "brown"];
                   const idx = types.indexOf(activeNoise);
                   scrollToSection((idx - 1 + 3) % 3);
                 }}
-                className="text-on-surface-variant hover:text-primary transition-colors"
+                className="p-2 text-on-surface-variant hover:text-primary transition-colors active:scale-90"
                 aria-label="Previous noise type"
               >
-                <SkipBack className="w-6 h-6" />
+                <SkipBack className="w-5 h-5 fill-current" />
               </button>
+              
               <button 
                 onClick={handlePlayPause}
-                className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-lg shadow-primary/10 active:scale-95 transition-transform group"
+                className="w-16 h-16 rounded-full bg-primary text-zinc-950 flex items-center justify-center shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all group relative"
                 aria-label={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? (
-                  <Pause className="w-7 h-7 text-zinc-950 fill-current" />
+                  <Pause className="w-8 h-8 fill-current relative z-10" />
                 ) : (
-                  <Play className="w-7 h-7 text-zinc-950 fill-current ml-1" />
+                  <Play className="w-8 h-8 fill-current ml-1 relative z-10" />
                 )}
               </button>
+
               <button 
                 onClick={() => {
                   const types: NoiseType[] = ["white", "pink", "brown"];
                   const idx = types.indexOf(activeNoise);
                   scrollToSection((idx + 1) % 3);
                 }}
-                className="text-on-surface-variant hover:text-primary transition-colors"
+                className="p-2 text-on-surface-variant hover:text-primary transition-colors active:scale-90"
                 aria-label="Next noise type"
               >
-                <SkipForward className="w-6 h-6" />
+                <SkipForward className="w-5 h-5 fill-current" />
               </button>
             </div>
 
-            {/* Volume Slider */}
-            <div 
-              className="flex items-center gap-3 w-full md:w-48"
-              onWheel={handleVolumeWheel}
-            >
-              <Volume1 className="text-secondary-dim w-5 h-5" />
-              <div className="flex-grow h-1.5 bg-surface-container-highest rounded-full relative group cursor-pointer">
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={volume}
-                  onChange={(e) => setVolume(parseInt(e.target.value))}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                  aria-label="Volume slider"
-                />
-                <div 
-                  className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-75"
-                  style={{ width: `${volume}%` }}
-                ></div>
-                <div 
-                  className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-primary rounded-full shadow-lg transition-all duration-75"
-                  style={{ left: `${volume}%` }}
-                ></div>
+            {/* Right: Volume & Settings */}
+            <div className="flex items-center justify-center md:justify-end gap-4 order-2 md:order-3">
+              <div 
+                className="flex items-center gap-3 w-full max-w-[200px] md:w-48 group"
+                onWheel={handleVolumeWheel}
+              >
+                <button 
+                  onClick={() => setVolume(0)}
+                  className="text-on-surface-variant hover:text-on-surface transition-colors"
+                >
+                  {volume === 0 ? <Volume1 className="w-4 h-4 text-error" /> : <Volume1 className="w-4 h-4" />}
+                </button>
+                
+                <div className="flex-grow h-1 bg-white/10 rounded-full relative cursor-pointer overflow-hidden">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={volume}
+                    onChange={(e) => setVolume(parseInt(e.target.value))}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    aria-label="Volume slider"
+                  />
+                  <div 
+                    className="absolute left-0 top-0 h-full bg-primary transition-all duration-75"
+                    style={{ width: `${volume}%` }}
+                  ></div>
+                </div>
+
+                <button 
+                  onClick={() => setVolume(100)}
+                  className="text-on-surface-variant hover:text-on-surface transition-colors"
+                >
+                  <Volume2 className="w-4 h-4" />
+                </button>
               </div>
-              <Volume2 className="text-secondary-dim w-5 h-5" />
             </div>
+
           </div>
         </div>
       </footer>
