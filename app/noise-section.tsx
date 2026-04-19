@@ -14,6 +14,7 @@ interface NoiseSectionProps {
 }
 
 export const NoiseSection: React.FC<NoiseSectionProps> = ({
+  id,
   title,
   level,
   description,
@@ -25,7 +26,7 @@ export const NoiseSection: React.FC<NoiseSectionProps> = ({
   overlayGradient,
 }) => {
   return (
-    <section className={`snap-section pt-16 ${bgClass}`}>
+    <section id={id} className={`snap-section pt-16 ${bgClass}`}>
       <div className="grain-overlay"></div>
       <div className="absolute inset-0 z-0 opacity-20">
         <div className={`absolute inset-0 ${overlayGradient}`}></div>

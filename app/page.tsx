@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { 
   Waves, 
   Timer, 
@@ -10,16 +10,73 @@ import {
   Pause,
   SkipForward, 
   Volume1, 
-  Volume2,
-  X
+  Volume2
 } from "lucide-react";
 import { NoiseSection } from "./noise-section";
+import { useNoise, type NoiseType } from "./use-noise";
+import { TimerModal } from "./timer-modal";
 
 export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(65);
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
   const [activeTimer, setActiveTimer] = useState("30M");
+  const [activeNoise, setActiveNoise] = useState<NoiseType>("white");
+
+  const { start, stop, setVolume: setAudioVolume } = useNoise();
+
+  // Intersection Observer for active noise sync
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.target.id) {
+            setActiveNoise(entry.target.id as NoiseType);
+          }
+        });
+      },
+      { threshold: 0.6 }
+    );
+
+    const sections = document.querySelectorAll(".snap-section");
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const handlePlayPause = useCallback(() => {
+    const nextState = !isPlaying;
+    setIsPlaying(nextState);
+    if (nextState) {
+      start(activeNoise, volume);
+    } else {
+      stop();
+    }
+  }, [isPlaying, activeNoise, volume, start, stop]);
+
+  // Sync audio when noise type changes while playing
+  useEffect(() => {
+    if (isPlaying) {
+      start(activeNoise, volume);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeNoise, isPlaying]);
+
+  useEffect(() => {
+    setAudioVolume(volume);
+  }, [volume, setAudioVolume]);
+
+  const scrollToSection = useCallback((index: number) => {
+    const sections = document.querySelectorAll(".snap-section");
+    sections[index]?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  const handleVolumeWheel = useCallback((e: React.WheelEvent) => {
+    setVolume((prev) => {
+      const delta = e.deltaY > 0 ? -2 : 2;
+      return Math.max(0, Math.min(100, prev + delta));
+    });
+  }, []);
 
   return (
     <>
@@ -31,7 +88,7 @@ export default function Home() {
         <h1 className="font-manrope uppercase tracking-[0.2em] text-sm font-light text-on-surface">
           AMBIA
         </h1>
-        <div className="w-6"></div> {/* Spacer for balance */}
+        <div className="w-6"></div>
       </header>
 
       {/* Main Content: Snap Scroll Sections */}
@@ -92,6 +149,7 @@ export default function Home() {
                 <button 
                   onClick={() => setIsTimerModalOpen(true)}
                   className="px-3 py-1.5 rounded-lg bg-surface-container-highest text-on-surface hover:bg-primary/20 transition-all flex items-center justify-center"
+                  aria-label="Set custom timer"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -100,12 +158,21 @@ export default function Home() {
 
             {/* Playback Center */}
             <div className="flex items-center gap-6">
-              <button className="text-on-surface-variant hover:text-primary transition-colors">
+              <button 
+                onClick={() => {
+                  const types: NoiseType[] = ["white", "pink", "brown"];
+                  const idx = types.indexOf(activeNoise);
+                  scrollToSection((idx - 1 + 3) % 3);
+                }}
+                className="text-on-surface-variant hover:text-primary transition-colors"
+                aria-label="Previous noise type"
+              >
                 <SkipBack className="w-6 h-6" />
               </button>
               <button 
-                onClick={() => setIsPlaying(!isPlaying)}
+                onClick={handlePlayPause}
                 className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-lg shadow-primary/10 active:scale-95 transition-transform group"
+                aria-label={isPlaying ? "Pause" : "Play"}
               >
                 {isPlaying ? (
                   <Pause className="w-7 h-7 text-zinc-950 fill-current" />
@@ -113,7 +180,15 @@ export default function Home() {
                   <Play className="w-7 h-7 text-zinc-950 fill-current ml-1" />
                 )}
               </button>
-              <button className="text-on-surface-variant hover:text-primary transition-colors">
+              <button 
+                onClick={() => {
+                  const types: NoiseType[] = ["white", "pink", "brown"];
+                  const idx = types.indexOf(activeNoise);
+                  scrollToSection((idx + 1) % 3);
+                }}
+                className="text-on-surface-variant hover:text-primary transition-colors"
+                aria-label="Next noise type"
+              >
                 <SkipForward className="w-6 h-6" />
               </button>
             </div>
@@ -121,12 +196,7 @@ export default function Home() {
             {/* Volume Slider */}
             <div 
               className="flex items-center gap-3 w-full md:w-48"
-              onWheel={(e) => {
-                setVolume((prev) => {
-                  const delta = e.deltaY > 0 ? -2 : 2;
-                  return Math.max(0, Math.min(100, prev + delta));
-                });
-              }}
+              onWheel={handleVolumeWheel}
             >
               <Volume1 className="text-secondary-dim w-5 h-5" />
               <div className="flex-grow h-1.5 bg-surface-container-highest rounded-full relative group cursor-pointer">
@@ -137,6 +207,7 @@ export default function Home() {
                   value={volume}
                   onChange={(e) => setVolume(parseInt(e.target.value))}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  aria-label="Volume slider"
                 />
                 <div 
                   className="absolute left-0 top-0 h-full bg-primary rounded-full transition-all duration-75"
@@ -153,44 +224,10 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Sleep Timer Modal */}
-      {isTimerModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-          <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setIsTimerModalOpen(false)}
-          ></div>
-          <div className="relative w-full max-w-sm bg-surface-container-high border border-white/10 rounded-2xl p-8 shadow-2xl animate-in fade-in zoom-in duration-300">
-            <button 
-              onClick={() => setIsTimerModalOpen(false)}
-              className="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            
-            <h3 className="text-xl font-bold tracking-tight mb-2">Custom Timer</h3>
-            <p className="text-on-surface-variant text-sm mb-8">Set a duration for your soundscape.</p>
-            
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="text-[10px] uppercase tracking-widest font-bold text-primary/60">Duration (Minutes)</label>
-                <input 
-                  type="number" 
-                  placeholder="e.g. 45"
-                  className="bg-surface-container-highest border border-white/5 rounded-xl px-4 py-3 outline-none focus:border-primary/30 transition-colors"
-                />
-              </div>
-              
-              <button 
-                onClick={() => setIsTimerModalOpen(false)}
-                className="w-full py-4 bg-primary text-zinc-950 font-bold rounded-xl hover:bg-primary-dim transition-colors"
-              >
-                Set Timer
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <TimerModal 
+        isOpen={isTimerModalOpen} 
+        onClose={() => setIsTimerModalOpen(false)} 
+      />
     </>
   );
 }
