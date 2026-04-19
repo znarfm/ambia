@@ -57,6 +57,34 @@
 
   --radius-lg: 12px;
   --radius-xl: 16px;
+
+  @keyframes float-slow {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(2%, 2%) scale(1.02);
+    }
+    66% {
+      transform: translate(-2%, 1%) scale(0.98);
+    }
+  }
+
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(1.05);
+    }
+  }
+
+  --animate-float-slow: float-slow 20s ease-in-out infinite;
+  --animate-pulse-slow: pulse-slow 12s ease-in-out infinite;
 }
 
 @layer base {
@@ -80,8 +108,8 @@
     scroll-snap-align: start;
     @apply relative flex h-full flex-col items-center justify-center overflow-hidden;
   }
-  .grain-overlay {
-    @apply pointer-events-none absolute inset-0 opacity-[0.03];
-    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCDgezsytkseqvuLNg1LOZyC8K0e4rhowDwSJKaPQNkTI0uu4XplmGPPWmdp-JG88A2sW8M2q7JVV_u-LTSuYGHiZzdW20LRruCQFHMPH6jomDFpN9dOizuI4m6gp-87fuUkDA42KJWpOstXg7cB3xaqJBvyRSV4JU9kZVnIiGOFmX_6VzIlTFfstO8OYI45vLSLwAkT-IuMtXvGoMv8vxEmSdGdpI_QT0KBxswsc_y6jB65FmL-Q_29vcV4Tu7l0lDnc_nT5wrfGk);
+  .snap-section {
+    scroll-snap-align: start;
+    @apply relative flex h-full flex-col items-center justify-center overflow-hidden;
   }
 }

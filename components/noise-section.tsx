@@ -11,6 +11,7 @@ interface NoiseSectionProps {
   accentColorClass?: string;
   decorative?: React.ReactNode;
   overlayGradient?: string;
+  auraColors?: string[];
 }
 
 export const NoiseSection: React.FC<NoiseSectionProps> = ({
@@ -26,11 +27,26 @@ export const NoiseSection: React.FC<NoiseSectionProps> = ({
   overlayGradient,
 }) => {
   return (
-    <section id={id} className={`snap-section pt-16 ${bgClass}`}>
-      <div className="grain-overlay"></div>
+    <section id={id} className={`snap-section w-full pt-16 ${bgClass}`}>
+      {/* SVG Noise Filter (Cleaner than images) */}
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]">
+        <svg 
+          viewBox="0 0 200 200" 
+          xmlns="http://www.w3.org/2000/svg" 
+          className="h-full w-full"
+          preserveAspectRatio="none"
+        >
+          <filter id="noiseFilter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+        </svg>
+      </div>
+
       <div className="absolute inset-0 z-0 opacity-20">
         <div className={`absolute inset-0 ${overlayGradient}`}></div>
       </div>
+      
       <div className="relative z-10 px-6 text-center">
         <p className={`mb-4 text-[10px] font-bold tracking-[0.3em] uppercase ${accentColorClass}`}>
           Frequency Level: {level}
