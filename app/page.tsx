@@ -54,13 +54,22 @@ export default function Home() {
         }, 0);
       }
 
+      const savedRemaining = localStorage.getItem("ambia_timer_remaining");
       const savedEndTime = localStorage.getItem("ambia_timer_end");
-      if (savedEndTime) {
+      const savedLabel = localStorage.getItem("ambia_timer_label");
+
+      if (savedRemaining) {
+        const remaining = parseInt(savedRemaining);
+        if (remaining > 0) {
+          setTimeLeft(remaining);
+          setActiveTimer(savedLabel);
+        }
+      } else if (savedEndTime) {
         const endTime = parseInt(savedEndTime);
         const remaining = Math.floor((endTime - Date.now()) / 1000);
         if (remaining > 0) {
           setTimeLeft(remaining);
-          setActiveTimer(localStorage.getItem("ambia_timer_label"));
+          setActiveTimer(savedLabel);
         } else {
           localStorage.removeItem("ambia_timer_end");
           localStorage.removeItem("ambia_timer_label");
@@ -87,6 +96,7 @@ export default function Home() {
     if (timeLeft === null) {
       if (isMounted) {
         localStorage.removeItem("ambia_timer_end");
+        localStorage.removeItem("ambia_timer_remaining");
         localStorage.removeItem("ambia_timer_label");
       }
       return;
@@ -101,18 +111,30 @@ export default function Home() {
       });
       if (isMounted) {
         localStorage.removeItem("ambia_timer_end");
+        localStorage.removeItem("ambia_timer_remaining");
         localStorage.removeItem("ambia_timer_label");
       }
       return;
     }
+
+    // If paused, save remaining seconds and clear absolute end time
+    if (!isPlaying) {
+      localStorage.setItem("ambia_timer_remaining", timeLeft.toString());
+      localStorage.removeItem("ambia_timer_end");
+      return;
+    }
+
+    // If playing, update absolute end time for background persistence
+    const endTime = Date.now() + timeLeft * 1000;
+    localStorage.setItem("ambia_timer_end", endTime.toString());
+    localStorage.removeItem("ambia_timer_remaining");
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, stop, isMounted]);
-
+  }, [timeLeft, stop, isMounted, isPlaying]);
 
   const formatTime = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -125,6 +147,7 @@ export default function Home() {
       if (timeStr === null) {
         setTimeLeft(null);
         setActiveTimer(null);
+        localStorage.removeItem("ambia_timer_remaining");
         return;
       }
       const mins = parseInt(timeStr);
@@ -136,6 +159,7 @@ export default function Home() {
       setActiveTimer(timeStr);
       if (isMounted) {
         localStorage.setItem("ambia_timer_end", endTime.toString());
+        localStorage.setItem("ambia_timer_remaining", durationSecs.toString());
         localStorage.setItem("ambia_timer_label", timeStr);
       }
     },
