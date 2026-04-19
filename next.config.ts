@@ -1,7 +1,11 @@
-import type { NextConfig } from "next";
+import withSerwistInit from "@serwist/next";
 
-const nextConfig: NextConfig = {
-  allowedDevOrigins: ['192.168.0.119'],
-};
+const withSerwist = withSerwistInit({
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
+  disable: process.env.NODE_ENV === "development",
+});
 
-export default nextConfig;
+export default withSerwist({
+  allowedDevOrigins: ["192.168.0.119"],
+});

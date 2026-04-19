@@ -22,6 +22,7 @@ export const metadata: Metadata = {
     description: "Your procedural sanctuary for focus and rest.",
     type: "website",
   },
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {
