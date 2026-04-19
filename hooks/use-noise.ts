@@ -43,8 +43,8 @@ export function useNoise() {
       let lastOut = 0.0;
       for (let i = 0; i < bufferSize; i++) {
         const white = Math.random() * 2 - 1;
-        const out = (lastOut + 0.02 * white) / 1.02;
-        output[i] = out * 3.5;
+        const out = (lastOut + 0.012 * white) / 1.012;
+        output[i] = out * 4.5;
         lastOut = out;
       }
     }
