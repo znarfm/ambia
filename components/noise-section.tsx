@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
+import React from "react";
 
 interface NoiseSectionProps {
   id: string;
@@ -15,34 +14,20 @@ interface NoiseSectionProps {
 }
 
 const BackgroundAura = React.memo<{ colors: string[] }>(({ colors }) => {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!mounted) return null;
-
-  const isDark = resolvedTheme === "dark";
-
   return (
-    <div
-      className={`pointer-events-none absolute inset-0 z-0 overflow-hidden transition-opacity duration-1000 select-none ${isDark ? "opacity-40 saturate-100" : "opacity-30 saturate-150"}`}
-    >
+    <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-20 saturate-150 transition-opacity duration-1000 select-none dark:opacity-30 dark:saturate-100">
       <div className="absolute inset-0 [backface-visibility:hidden] [perspective:1000px]">
         <div
-          className={`animate-float-slow absolute -top-[25%] -left-[25%] h-[110%] w-[110%] transform-gpu rounded-full blur-[160px] ${!isDark && colors[0].includes("white") ? "bg-primary/30" : colors[0]}`}
+          className={`animate-float-slow absolute -top-[25%] -left-[25%] h-[110%] w-[110%] transform-gpu rounded-full blur-[100px] will-change-transform ${colors[0]} dark:bg-primary/20`}
           style={{ animationDelay: "0s" }}
         ></div>
         <div
-          className={`animate-float-slow absolute -right-[25%] -bottom-[25%] h-[100%] w-[100%] transform-gpu rounded-full blur-[140px] ${!isDark && (colors[1] || colors[0]).includes("white") ? "bg-primary/20" : colors[1] || colors[0]}`}
+          className={`animate-float-slow absolute -right-[25%] -bottom-[25%] h-[100%] w-[100%] transform-gpu rounded-full blur-[90px] will-change-transform ${colors[1] || colors[0]} dark:bg-primary/10`}
           style={{ animationDelay: "-5s" }}
         ></div>
         {colors[2] && (
           <div
-            className={`animate-pulse-slow absolute top-1/2 left-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-full blur-[120px] ${!isDark && colors[2].includes("white") ? "bg-primary/25" : colors[2]}`}
+            className={`animate-pulse-slow absolute top-1/2 left-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-full blur-[70px] will-change-transform ${colors[2]} dark:bg-primary/15`}
           ></div>
         )}
       </div>

@@ -60,12 +60,12 @@ export default function Home() {
 
   // Load persistence
   useEffect(() => {
+    const savedVolume = localStorage.getItem("ambia_volume");
+    const savedNoise = localStorage.getItem("ambia_noise");
+
     requestAnimationFrame(() => {
       setIsMounted(true);
-      const savedVolume = localStorage.getItem("ambia_volume");
       if (savedVolume) setVolume(parseInt(savedVolume));
-
-      const savedNoise = localStorage.getItem("ambia_noise");
       if (savedNoise) {
         setActiveNoise(savedNoise as NoiseType);
         setTimeout(() => {
@@ -165,31 +165,6 @@ export default function Home() {
     return () => observer.disconnect();
   }, [isMounted]);
 
-  const colors = (() => {
-    const isDark = isMounted && resolvedTheme === "dark";
-    const themes = {
-      white: {
-        primary: isDark ? "#FFFFFF" : "#4A4A4A",
-        container: isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.08)",
-        text: isDark ? "#000000" : "#FFFFFF",
-        glow: isDark ? "rgba(255, 255, 255, 0.4)" : "rgba(0, 0, 0, 0.2)",
-      },
-      pink: {
-        primary: isDark ? "#FFB2BB" : "#D81B60",
-        container: isDark ? "rgba(255, 178, 187, 0.2)" : "rgba(216, 27, 96, 0.1)",
-        text: isDark ? "#2D1619" : "#FFFFFF",
-        glow: isDark ? "rgba(255, 178, 187, 0.4)" : "rgba(216, 27, 96, 0.3)",
-      },
-      brown: {
-        primary: isDark ? "#E3C28E" : "#745B30",
-        container: isDark ? "rgba(227, 194, 142, 0.2)" : "rgba(116, 91, 48, 0.1)",
-        text: isDark ? "#2D1F0E" : "#FFFFFF",
-        glow: isDark ? "rgba(227, 194, 142, 0.4)" : "rgba(116, 91, 48, 0.3)",
-      },
-    };
-    return themes[activeNoise] || themes.brown;
-  })();
-
   const formatTime = (seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
@@ -200,17 +175,7 @@ export default function Home() {
   };
 
   return (
-    <div
-      className={`flex h-dvh flex-col transition-all duration-700 ${isMounted ? "opacity-100" : "opacity-0"}`}
-      style={
-        {
-          "--dynamic-primary": colors.primary,
-          "--dynamic-container": colors.container,
-          "--dynamic-text": colors.text,
-          "--dynamic-glow": colors.glow,
-        } as React.CSSProperties
-      }
-    >
+    <div className={`flex h-dvh flex-col transition-colors duration-700 noise-${activeNoise}`}>
       <Header
         isMounted={isMounted}
         resolvedTheme={resolvedTheme}
