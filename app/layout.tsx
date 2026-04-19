@@ -13,7 +13,8 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   title: "Ambia | Sensory Soundscapes",
-  description: "Immersive procedural white, pink, and brown noise for focus, sleep, and relaxation.",
+  description:
+    "Immersive procedural white, pink, and brown noise for focus, sleep, and relaxation.",
   keywords: ["white noise", "pink noise", "brown noise", "focus", "sleep", "ambient", "sensory"],
   authors: [{ name: "Ambia Team" }],
   openGraph: {

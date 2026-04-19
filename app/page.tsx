@@ -20,7 +20,7 @@ import { TimerModal } from "../components/timer-modal";
 import { useTheme } from "next-themes";
 
 export default function Home() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(65);
@@ -152,7 +152,10 @@ export default function Home() {
           }
         });
       },
-      { threshold: 0.6 },
+      {
+        root: document.querySelector(".snap-container"),
+        threshold: 0.5,
+      },
     );
 
     const sections = document.querySelectorAll(".snap-section");
@@ -244,16 +247,19 @@ export default function Home() {
       }}
     >
       {/* Top Navigation */}
-      <header className="bg-surface/80 sticky top-0 z-50 flex flex-shrink-0 items-center justify-between border-b border-outline-variant/10 px-8 py-5 backdrop-blur-md transition-all duration-500">
+      <header className="bg-surface/80 border-outline-variant/10 sticky top-0 z-50 flex flex-shrink-0 items-center justify-between border-b px-8 py-5 backdrop-blur-md transition-all duration-500">
         <div className="flex items-center gap-4">
-          <Waves className="text-primary h-7 w-7 transition-all duration-500" style={{ color: "var(--dynamic-primary)" }} />
+          <Waves
+            className="text-primary h-7 w-7 transition-all duration-500"
+            style={{ color: "var(--dynamic-primary)" }}
+          />
         </div>
         <h1 className="font-manrope text-on-surface text-xs font-bold tracking-[0.3em] uppercase opacity-80">
           AMBIA
         </h1>
         <button
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-surface-variant/50 active:scale-90"
+          className="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-90"
           aria-label="Toggle theme"
         >
           {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -278,7 +284,7 @@ export default function Home() {
                 boxShadow: activeNoise === type ? "0 0 15px var(--dynamic-glow)" : undefined,
               }}
             ></div>
-            <span className="bg-surface text-on-surface absolute right-full mr-4 scale-90 rounded-md border border-outline-variant/10 px-2 py-1 text-[10px] font-bold opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100">
+            <span className="bg-surface text-on-surface border-outline-variant/10 absolute right-full mr-4 scale-90 rounded-md border px-2 py-1 text-[10px] font-bold opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100">
               {type.toUpperCase()}
             </span>
           </button>
@@ -291,7 +297,6 @@ export default function Home() {
           id="white"
           title="WHITE"
           level="High"
-          index="01"
           bgClass="bg-surface"
           overlayGradient="bg-gradient-to-b from-white/10 to-transparent"
           description="A static, pure wall of sound. Designed to mask sharp environmental interruptions and sharpen focus."
@@ -302,7 +307,6 @@ export default function Home() {
           id="pink"
           title="PINK"
           level="Mid"
-          index="02"
           bgClass="bg-surface-container-low"
           textColorClass="text-[#FFB2BB]"
           description="Balanced and natural, mimicking the steady rhythm of rainfall or wind through heavy autumn leaves."
@@ -313,7 +317,6 @@ export default function Home() {
           id="brown"
           title="BROWN"
           level="Deep"
-          index="03"
           bgClass="bg-surface-container-lowest"
           textColorClass="text-[#E3C28E]"
           description="A deep, powerful rumble. Mimics the roar of a distant ocean or the low hum of a cavernous space."
@@ -322,12 +325,12 @@ export default function Home() {
       </main>
 
       {/* Bottom Control Panel */}
-      <footer className="bg-surface/80 safe-area-bottom z-50 flex-shrink-0 border-t border-outline-variant/10 backdrop-blur-lg transition-all duration-500">
+      <footer className="bg-surface/80 safe-area-bottom border-outline-variant/10 z-50 flex-shrink-0 border-t backdrop-blur-lg transition-all duration-500">
         <div className="mx-auto max-w-screen-2xl px-8 py-6 md:py-8">
           <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-3 md:gap-4">
             {/* Left: Sleep Timer */}
             <div className="order-3 flex items-center justify-center gap-3 md:order-1 md:justify-start">
-              <div className="bg-surface-variant/30 flex items-center gap-2 rounded-xl border border-outline-variant/10 px-3 py-2.5">
+              <div className="bg-surface-variant/30 border-outline-variant/10 flex items-center gap-2 rounded-xl border px-3 py-2.5">
                 <Timer
                   className="h-4 w-4 transition-colors duration-500"
                   style={{
@@ -357,9 +360,7 @@ export default function Home() {
                           ? "var(--dynamic-container)"
                           : "var(--color-surface-variant)",
                       borderColor:
-                        activeTimer === `${mins}M`
-                          ? "transparent"
-                          : "var(--color-outline-variant)",
+                        activeTimer === `${mins}M` ? "transparent" : "var(--color-outline-variant)",
                       color:
                         activeTimer === `${mins}M`
                           ? "var(--dynamic-primary)"
@@ -372,7 +373,7 @@ export default function Home() {
                 ))}
                 <button
                   onClick={() => setIsTimerModalOpen(true)}
-                  className="text-on-surface-variant hover:text-on-surface bg-surface-variant flex h-11 w-11 items-center justify-center rounded-xl border border-outline-variant transition-all hover:bg-surface-variant/80 active:scale-95"
+                  className="text-on-surface-variant hover:text-on-surface bg-surface-variant border-outline-variant hover:bg-surface-variant/80 flex h-11 w-11 items-center justify-center rounded-xl border transition-all active:scale-95"
                   style={{
                     backgroundColor:
                       activeTimer && !["15", "30", "60"].map((m) => `${m}M`).includes(activeTimer!)

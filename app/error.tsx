@@ -19,7 +19,7 @@ export default function Error({
       <div className="bg-error/10 flex h-20 w-20 items-center justify-center rounded-full">
         <AlertCircle className="text-error h-10 w-10" />
       </div>
-      
+
       <div className="space-y-3">
         <h2 className="text-2xl font-bold tracking-tight">Something went wrong</h2>
         <p className="text-on-surface-variant max-w-xs text-sm leading-relaxed">

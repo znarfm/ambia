@@ -18,26 +18,31 @@ const BackgroundAura: React.FC<{ colors: string[] }> = ({ colors }) => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!mounted) return null;
 
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className={`absolute inset-0 overflow-hidden pointer-events-none z-0 select-none transition-opacity duration-1000 ${isDark ? "opacity-40 saturate-100" : "opacity-30 saturate-150"}`}>
-      <div className="absolute inset-0 [perspective:1000px] [backface-visibility:hidden]">
-        <div 
-          className={`absolute -top-[25%] -left-[25%] w-[110%] h-[110%] rounded-full blur-[160px] animate-float-slow transform-gpu ${!isDark && colors[0].includes('white') ? 'bg-primary/30' : colors[0]}`}
+    <div
+      className={`pointer-events-none absolute inset-0 z-0 overflow-hidden transition-opacity duration-1000 select-none ${isDark ? "opacity-40 saturate-100" : "opacity-30 saturate-150"}`}
+    >
+      <div className="absolute inset-0 [backface-visibility:hidden] [perspective:1000px]">
+        <div
+          className={`animate-float-slow absolute -top-[25%] -left-[25%] h-[110%] w-[110%] transform-gpu rounded-full blur-[160px] ${!isDark && colors[0].includes("white") ? "bg-primary/30" : colors[0]}`}
           style={{ animationDelay: "0s" }}
         ></div>
-        <div 
-          className={`absolute -bottom-[25%] -right-[25%] w-[100%] h-[100%] rounded-full blur-[140px] animate-float-slow transform-gpu ${!isDark && (colors[1] || colors[0]).includes('white') ? 'bg-primary/20' : (colors[1] || colors[0])}`}
+        <div
+          className={`animate-float-slow absolute -right-[25%] -bottom-[25%] h-[100%] w-[100%] transform-gpu rounded-full blur-[140px] ${!isDark && (colors[1] || colors[0]).includes("white") ? "bg-primary/20" : colors[1] || colors[0]}`}
           style={{ animationDelay: "-5s" }}
         ></div>
         {colors[2] && (
-          <div 
-            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full blur-[120px] animate-pulse-slow transform-gpu ${!isDark && colors[2].includes('white') ? 'bg-primary/25' : colors[2]}`}
+          <div
+            className={`animate-pulse-slow absolute top-1/2 left-1/2 h-[80%] w-[80%] -translate-x-1/2 -translate-y-1/2 transform-gpu rounded-full blur-[120px] ${!isDark && colors[2].includes("white") ? "bg-primary/25" : colors[2]}`}
           ></div>
         )}
       </div>
@@ -64,7 +69,7 @@ export const NoiseSection: React.FC<NoiseSectionProps> = ({
       <div className="absolute inset-0 z-0 opacity-20">
         <div className={`absolute inset-0 ${overlayGradient}`}></div>
       </div>
-      
+
       <div className="relative z-10 px-6 text-center">
         <p className={`mb-4 text-[10px] font-bold tracking-[0.3em] uppercase ${accentColorClass}`}>
           Frequency Level: {level}
