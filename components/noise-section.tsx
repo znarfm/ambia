@@ -14,7 +14,7 @@ interface NoiseSectionProps {
   auraColors?: string[];
 }
 
-const BackgroundAura: React.FC<{ colors: string[] }> = ({ colors }) => {
+const BackgroundAura = React.memo<{ colors: string[] }>(({ colors }) => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -48,9 +48,10 @@ const BackgroundAura: React.FC<{ colors: string[] }> = ({ colors }) => {
       </div>
     </div>
   );
-};
+});
+BackgroundAura.displayName = "BackgroundAura";
 
-export const NoiseSection = React.forwardRef<HTMLElement, NoiseSectionProps>(({
+export const NoiseSection = React.memo(React.forwardRef<HTMLElement, NoiseSectionProps>(({
   id,
   title,
   level,
@@ -86,6 +87,6 @@ export const NoiseSection = React.forwardRef<HTMLElement, NoiseSectionProps>(({
       {decorative}
     </section>
   );
-});
+}));
 
 NoiseSection.displayName = "NoiseSection";

@@ -16,9 +16,13 @@ import {
 } from "lucide-react";
 import { NoiseSection } from "../components/noise-section";
 import { useNoise, type NoiseType } from "../hooks/use-noise";
-import { TimerModal } from "../components/timer-modal";
+import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { useWebHaptics } from "web-haptics/react";
+
+const TimerModal = dynamic(() => import("../components/timer-modal").then((mod) => mod.TimerModal), {
+  ssr: false,
+});
 
 export default function Home() {
   const haptic = useWebHaptics();
