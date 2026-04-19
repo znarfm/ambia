@@ -6,7 +6,6 @@ interface NoiseSectionProps {
   title: string;
   level: string;
   description: string;
-  index: string;
   bgClass: string;
   textColorClass?: string;
   accentColorClass?: string;
@@ -51,7 +50,6 @@ export const NoiseSection: React.FC<NoiseSectionProps> = ({
   title,
   level,
   description,
-  index,
   bgClass,
   textColorClass = "text-on-surface",
   accentColorClass = "text-primary/60",
@@ -79,11 +77,6 @@ export const NoiseSection: React.FC<NoiseSectionProps> = ({
         <p className="text-on-surface-variant mx-auto mt-8 max-w-md text-lg leading-relaxed font-light">
           {description}
         </p>
-        <div className="mt-12 flex items-center justify-center gap-8">
-          <div className="bg-outline-variant/30 h-[2px] w-16"></div>
-          <span className="text-primary text-sm font-bold tracking-widest">{index} / 03</span>
-          <div className="bg-outline-variant/30 h-[2px] w-16"></div>
-        </div>
       </div>
       {decorative}
     </section>
