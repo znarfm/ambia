@@ -64,37 +64,39 @@ export const TimerModal: React.FC<TimerModalProps> = ({
   };
 
   return (
-    <div className={`fixed inset-0 z-[100] flex flex-col justify-end sm:justify-center overflow-y-auto overflow-x-hidden p-0 sm:p-6 transition-all duration-500 ${isAnimate ? "visible" : "invisible"}`}>
-      <div 
-        className={`fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-500 ${isAnimate ? "opacity-100" : "opacity-0"}`} 
+    <div
+      className={`fixed inset-0 z-[100] flex flex-col justify-end overflow-x-hidden overflow-y-auto p-0 transition-all duration-500 sm:justify-center sm:p-6 ${isAnimate ? "visible" : "invisible"}`}
+    >
+      <div
+        className={`fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-500 ${isAnimate ? "opacity-100" : "opacity-0"}`}
         onClick={handleClose}
       ></div>
-      
-      <div 
-        className={`relative mx-auto w-full max-w-sm bg-surface-container-high rounded-t-[2.5rem] sm:rounded-3xl border-t sm:border border-white/10 p-8 sm:p-10 shadow-2xl backdrop-blur-3xl sm:my-auto transition-all duration-500 ease-out ${
-          isAnimate 
-            ? "translate-y-0 opacity-100 scale-100" 
-            : "translate-y-full sm:translate-y-8 opacity-0 sm:scale-95"
+
+      <div
+        className={`bg-surface-container-high relative mx-auto w-full max-w-sm rounded-t-[2.5rem] border-t border-white/10 p-8 shadow-2xl backdrop-blur-3xl transition-all duration-500 ease-out sm:my-auto sm:rounded-3xl sm:border sm:p-10 ${
+          isAnimate
+            ? "translate-y-0 scale-100 opacity-100"
+            : "translate-y-full opacity-0 sm:translate-y-8 sm:scale-95"
         }`}
       >
         {/* Mobile Handle */}
-        <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-8 sm:hidden" />
-        
+        <div className="mx-auto mb-8 h-1.5 w-12 rounded-full bg-white/10 sm:hidden" />
+
         <button
           onClick={handleClose}
-          className="text-on-surface-variant hover:text-on-surface hover:bg-white/5 absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-90"
+          className="text-on-surface-variant hover:text-on-surface absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-white/5 active:scale-90"
           aria-label="Close modal"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="animate-in fade-in slide-in-from-bottom-4 delay-150 duration-700">
-          <div className="flex items-center gap-3 mb-3">
-            <Timer 
-              className="w-6 h-6 transition-colors duration-500" 
-              style={{ 
+          <div className="mb-3 flex items-center gap-3">
+            <Timer
+              className="h-6 w-6 transition-colors duration-500"
+              style={{
                 color: "var(--dynamic-primary)",
-                filter: "drop-shadow(0 0 8px var(--dynamic-glow))"
+                filter: "drop-shadow(0 0 8px var(--dynamic-glow))",
               }}
             />
             <h3 className="text-2xl font-bold tracking-tight">Custom Timer</h3>
@@ -104,7 +106,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
           </p>
         </div>
 
-        <div className="animate-in fade-in slide-in-from-bottom-4 delay-300 duration-700 flex flex-col gap-8">
+        <div className="animate-in fade-in slide-in-from-bottom-4 flex flex-col gap-8 delay-300 duration-700">
           <div className="flex flex-col gap-3">
             <label
               htmlFor="duration"
@@ -123,9 +125,9 @@ export const TimerModal: React.FC<TimerModalProps> = ({
               onChange={(e) => setCustomValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
               className="bg-surface-container-highest/50 rounded-2xl border border-white/5 px-6 py-4 text-lg font-medium transition-all outline-none focus:ring-2"
-              style={{ 
+              style={{
                 ["--tw-ring-color" as any]: "var(--dynamic-primary)",
-                borderColor: customValue ? "var(--dynamic-primary)" : undefined
+                borderColor: customValue ? "var(--dynamic-primary)" : undefined,
               }}
               autoFocus
             />
@@ -133,12 +135,12 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 
           <button
             onClick={handleSubmit}
-            className="w-full rounded-2xl py-5 font-bold transition-all active:scale-95 mb-6 sm:mb-0"
+            className="mb-6 w-full rounded-2xl py-5 font-bold transition-all active:scale-95 sm:mb-0"
             style={{
               backgroundColor: "var(--dynamic-primary)",
               color: "var(--dynamic-text)",
               boxShadow: "0 10px 20px -5px var(--dynamic-glow)",
-              paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))"
+              paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
             }}
           >
             Set Timer

@@ -13,16 +13,21 @@ import {
   Volume2,
   Sun,
   Moon,
+  Info,
 } from "lucide-react";
 import { NoiseSection } from "../components/noise-section";
 import { useNoise, type NoiseType } from "../hooks/use-noise";
+import { AboutModal } from "../components/about-modal";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { useWebHaptics } from "web-haptics/react";
 
-const TimerModal = dynamic(() => import("../components/timer-modal").then((mod) => mod.TimerModal), {
-  ssr: false,
-});
+const TimerModal = dynamic(
+  () => import("../components/timer-modal").then((mod) => mod.TimerModal),
+  {
+    ssr: false,
+  },
+);
 
 export default function Home() {
   const haptic = useWebHaptics();
@@ -31,10 +36,11 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(65);
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [activeTimer, setActiveTimer] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [activeNoise, setActiveNoise] = useState<NoiseType>("white");
-  
+
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
   const dummyAudioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -189,7 +195,7 @@ export default function Home() {
       const nextNoise = noises[nextIndex];
       setActiveNoise(nextNoise);
       if (isPlaying) start(nextNoise, volume);
-      
+
       // Scroll to the new section
       sectionsRef.current[nextIndex]?.scrollIntoView({ behavior: "smooth" });
     });
@@ -301,18 +307,24 @@ export default function Home() {
     }
   }, [volume, setAudioVolume, isMounted]);
 
-  const scrollToSection = useCallback((index: number) => {
-    haptic.trigger("selection");
-    sectionsRef.current[index]?.scrollIntoView({ behavior: "smooth" });
-  }, [haptic]);
+  const scrollToSection = useCallback(
+    (index: number) => {
+      haptic.trigger("selection");
+      sectionsRef.current[index]?.scrollIntoView({ behavior: "smooth" });
+    },
+    [haptic],
+  );
 
-  const handleVolumeWheel = useCallback((e: React.WheelEvent) => {
-    haptic.trigger("selection");
-    setVolume((prev) => {
-      const delta = e.deltaY > 0 ? -2 : 2;
-      return Math.max(0, Math.min(100, prev + delta));
-    });
-  }, [haptic]);
+  const handleVolumeWheel = useCallback(
+    (e: React.WheelEvent) => {
+      haptic.trigger("selection");
+      setVolume((prev) => {
+        const delta = e.deltaY > 0 ? -2 : 2;
+        return Math.max(0, Math.min(100, prev + delta));
+      });
+    },
+    [haptic],
+  );
 
   // Keyboard Shortcuts
   useEffect(() => {
@@ -349,6 +361,9 @@ export default function Home() {
         case "t":
           setIsTimerModalOpen(true);
           break;
+        case "a":
+          setIsAboutModalOpen(true);
+          break;
       }
     };
 
@@ -371,14 +386,14 @@ export default function Home() {
           primary: "#FFB2BB",
           container: "rgba(255, 178, 187, 0.2)",
           text: "#2D1619",
-          glow: "rgba(255, 178, 187, 0.4)",
+          glow: isDark ? "rgba(255, 178, 187, 0.4)" : "rgba(255, 100, 120, 0.3)",
         };
       case "brown":
         return {
           primary: "#E3C28E",
           container: "rgba(227, 194, 142, 0.2)",
           text: "#2D1F0E",
-          glow: "rgba(227, 194, 142, 0.4)",
+          glow: isDark ? "rgba(227, 194, 142, 0.4)" : "rgba(120, 80, 40, 0.3)",
         };
       default:
         return {
@@ -404,29 +419,47 @@ export default function Home() {
     >
       {/* Top Navigation */}
       <header className="bg-surface/80 border-outline-variant/10 sticky top-0 z-50 flex flex-shrink-0 items-center justify-between border-b px-8 py-5 backdrop-blur-md transition-all duration-500">
-        <div className="flex items-center gap-4">
+        <button
+          onClick={() => {
+            haptic.trigger("medium");
+            setIsAboutModalOpen(true);
+          }}
+          className="group flex items-center gap-3 transition-all"
+        >
           <Waves
             className="text-primary h-7 w-7 transition-all duration-500"
             style={{ color: "var(--dynamic-primary)" }}
           />
-        </div>
-        <h1 className="font-manrope text-on-surface text-xs font-bold tracking-[0.3em] uppercase opacity-80">
-          AMBIA
-        </h1>
-        <button
-          onClick={() => {
-            haptic.trigger("light");
-            setTheme(resolvedTheme === "dark" ? "light" : "dark");
-          }}
-          className="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-90"
-          aria-label="Toggle theme"
-        >
-          {!isMounted ? null : resolvedTheme === "dark" ? (
-            <Sun className="h-5 w-5" />
-          ) : (
-            <Moon className="h-5 w-5" />
-          )}
+          <h1 className="font-manrope text-on-surface text-xs font-bold tracking-[0.3em] uppercase opacity-80 transition-opacity group-hover:opacity-100">
+            AMBIA
+          </h1>
         </button>
+        <div className="flex items-center gap-6">
+          <button
+            onClick={() => {
+              haptic.trigger("light");
+              setIsAboutModalOpen(true);
+            }}
+            className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-white/5 active:scale-90"
+            aria-label="About"
+          >
+            <Info className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => {
+              haptic.trigger("light");
+              setTheme(resolvedTheme === "dark" ? "light" : "dark");
+            }}
+            className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-white/5 active:scale-90"
+            aria-label="Toggle theme"
+          >
+            {!isMounted ? null : resolvedTheme === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </button>
+        </div>
       </header>
 
       {/* Vertical Dot Indicator (Pagination) */}
@@ -457,7 +490,9 @@ export default function Home() {
       {/* Main Content: Snap Scroll Sections */}
       <main className="snap-container flex-grow overflow-y-auto">
         <NoiseSection
-          ref={(el) => { sectionsRef.current[0] = el; }}
+          ref={(el) => {
+            sectionsRef.current[0] = el;
+          }}
           id="white"
           title="WHITE"
           level="High"
@@ -468,7 +503,9 @@ export default function Home() {
         />
 
         <NoiseSection
-          ref={(el) => { sectionsRef.current[1] = el; }}
+          ref={(el) => {
+            sectionsRef.current[1] = el;
+          }}
           id="pink"
           title="PINK"
           level="Mid"
@@ -479,7 +516,9 @@ export default function Home() {
         />
 
         <NoiseSection
-          ref={(el) => { sectionsRef.current[2] = el; }}
+          ref={(el) => {
+            sectionsRef.current[2] = el;
+          }}
           id="brown"
           title="BROWN"
           level="Deep"
@@ -672,11 +711,13 @@ export default function Home() {
         }}
       />
 
+      <AboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
+
       {/* Hidden dummy audio to trigger Media Session API reliably */}
-      <audio 
+      <audio
         ref={dummyAudioRef}
-        loop 
-        playsInline 
+        loop
+        playsInline
         src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA=="
         className="hidden"
       />

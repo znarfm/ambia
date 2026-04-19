@@ -51,42 +51,51 @@ const BackgroundAura = React.memo<{ colors: string[] }>(({ colors }) => {
 });
 BackgroundAura.displayName = "BackgroundAura";
 
-export const NoiseSection = React.memo(React.forwardRef<HTMLElement, NoiseSectionProps>(({
-  id,
-  title,
-  level,
-  description,
-  bgClass,
-  textColorClass = "text-on-surface",
-  accentColorClass = "text-primary/60",
-  decorative,
-  overlayGradient,
-  auraColors = ["bg-white/5", "bg-white/5"],
-}, ref) => {
-  return (
-    <section ref={ref} id={id} className={`snap-section w-full pt-16 ${bgClass}`}>
-      <BackgroundAura colors={auraColors} />
+export const NoiseSection = React.memo(
+  React.forwardRef<HTMLElement, NoiseSectionProps>(
+    (
+      {
+        id,
+        title,
+        level,
+        description,
+        bgClass,
+        textColorClass = "text-on-surface",
+        accentColorClass = "text-primary/60",
+        decorative,
+        overlayGradient,
+        auraColors = ["bg-white/5", "bg-white/5"],
+      },
+      ref,
+    ) => {
+      return (
+        <section ref={ref} id={id} className={`snap-section w-full pt-16 ${bgClass}`}>
+          <BackgroundAura colors={auraColors} />
 
-      <div className="absolute inset-0 z-0 opacity-20">
-        <div className={`absolute inset-0 ${overlayGradient}`}></div>
-      </div>
+          <div className="absolute inset-0 z-0 opacity-20">
+            <div className={`absolute inset-0 ${overlayGradient}`}></div>
+          </div>
 
-      <div className="relative z-10 px-6 text-center">
-        <p className={`mb-4 text-[10px] font-bold tracking-[0.3em] uppercase ${accentColorClass}`}>
-          Frequency Level: {level}
-        </p>
-        <h2
-          className={`text-[5rem] leading-none font-extrabold tracking-tighter md:text-[8rem] ${textColorClass}`}
-        >
-          {title}
-        </h2>
-        <p className="text-on-surface-variant mx-auto mt-8 max-w-md text-lg leading-relaxed font-light">
-          {description}
-        </p>
-      </div>
-      {decorative}
-    </section>
-  );
-}));
+          <div className="relative z-10 px-6 text-center">
+            <p
+              className={`mb-4 text-[10px] font-bold tracking-[0.3em] uppercase ${accentColorClass}`}
+            >
+              Frequency Level: {level}
+            </p>
+            <h2
+              className={`text-[5rem] leading-none font-extrabold tracking-tighter md:text-[8rem] ${textColorClass}`}
+            >
+              {title}
+            </h2>
+            <p className="text-on-surface-variant mx-auto mt-8 max-w-md text-lg leading-relaxed font-light">
+              {description}
+            </p>
+          </div>
+          {decorative}
+        </section>
+      );
+    },
+  ),
+);
 
 NoiseSection.displayName = "NoiseSection";
