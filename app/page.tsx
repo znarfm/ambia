@@ -18,8 +18,10 @@ import { NoiseSection } from "../components/noise-section";
 import { useNoise, type NoiseType } from "../hooks/use-noise";
 import { TimerModal } from "../components/timer-modal";
 import { useTheme } from "next-themes";
+import { useWebHaptics } from "web-haptics/react";
 
 export default function Home() {
+  const haptic = useWebHaptics();
   const { setTheme, resolvedTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -148,6 +150,7 @@ export default function Home() {
 
   const handleTimerSelect = useCallback(
     (timeStr: string | null) => {
+      haptic.trigger("selection");
       if (timeStr === null) {
         setTimeLeft(null);
         setActiveTimer(null);
@@ -197,8 +200,10 @@ export default function Home() {
     const nextState = !isPlaying;
     setIsPlaying(nextState);
     if (nextState) {
+      haptic.trigger("medium");
       start(activeNoise, volume);
     } else {
+      haptic.trigger("light");
       stop();
     }
   }, [isPlaying, activeNoise, volume, start, stop]);
@@ -218,16 +223,18 @@ export default function Home() {
   }, [volume, setAudioVolume, isMounted]);
 
   const scrollToSection = useCallback((index: number) => {
+    haptic.trigger("selection");
     const sections = document.querySelectorAll(".snap-section");
     sections[index]?.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  }, [haptic]);
 
   const handleVolumeWheel = useCallback((e: React.WheelEvent) => {
+    haptic.trigger("selection");
     setVolume((prev) => {
       const delta = e.deltaY > 0 ? -2 : 2;
       return Math.max(0, Math.min(100, prev + delta));
     });
-  }, []);
+  }, [haptic]);
 
   // Keyboard Shortcuts
   useEffect(() => {
@@ -329,7 +336,10 @@ export default function Home() {
           AMBIA
         </h1>
         <button
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          onClick={() => {
+            haptic.trigger("light");
+            setTheme(resolvedTheme === "dark" ? "light" : "dark");
+          }}
           className="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-90"
           aria-label="Toggle theme"
         >
@@ -541,6 +551,7 @@ export default function Home() {
                     min="0"
                     max="100"
                     value={volume}
+                    onInput={() => haptic.trigger("selection")}
                     onChange={(e) => setVolume(parseInt(e.target.value))}
                     className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                     aria-label="Volume slider"
