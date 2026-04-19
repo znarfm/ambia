@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { X, Timer } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 
@@ -21,6 +21,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
   const [customValue, setCustomValue] = useState("");
   const [shouldRender, setShouldRender] = useState(isOpen);
   const [isAnimate, setIsAnimate] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleClose = React.useCallback(() => {
     haptic.trigger("light");
@@ -57,6 +58,16 @@ export const TimerModal: React.FC<TimerModalProps> = ({
       };
     }
   }, [isOpen]);
+
+  React.useEffect(() => {
+    if (isOpen && shouldRender) {
+      // Small delay to ensure modal is visible/rendered
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, shouldRender]);
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -123,6 +134,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
             </label>
             <input
               id="duration"
+              ref={inputRef}
               type="number"
               inputMode="numeric"
               pattern="[0-9]*"
@@ -137,7 +149,6 @@ export const TimerModal: React.FC<TimerModalProps> = ({
                   borderColor: customValue ? "var(--dynamic-primary)" : undefined,
                 } as React.CSSProperties
               }
-              autoFocus
             />
           </div>
 

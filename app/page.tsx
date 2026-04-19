@@ -104,9 +104,20 @@ export default function Home() {
     localStorage.setItem("ambia_noise", activeNoise);
   }, [activeNoise, isMounted]);
 
-  // Sleep Timer Countdown Logic
+  const handleStopAudio = useCallback(() => {
+    setIsPlaying(false);
+    stop();
+    setTimeLeft(null);
+    setActiveTimer(null);
+    if (dummyAudioRef.current) {
+      dummyAudioRef.current.pause();
+      dummyAudioRef.current.currentTime = 0;
+    }
+  }, [stop]);
+
+  // Sleep Timer Countdown Logic (Absolute Time Based)
   useEffect(() => {
-    if (timeLeft === null) {
+    if (timeLeft === null || !isMounted) {
       if (isMounted) {
         localStorage.removeItem("ambia_timer_end");
         localStorage.removeItem("ambia_timer_remaining");
@@ -116,17 +127,7 @@ export default function Home() {
     }
 
     if (timeLeft <= 0) {
-      requestAnimationFrame(() => {
-        setIsPlaying(false);
-        stop();
-        setTimeLeft(null);
-        setActiveTimer(null);
-      });
-      if (isMounted) {
-        localStorage.removeItem("ambia_timer_end");
-        localStorage.removeItem("ambia_timer_remaining");
-        localStorage.removeItem("ambia_timer_label");
-      }
+      requestAnimationFrame(() => handleStopAudio());
       return;
     }
 
@@ -138,16 +139,49 @@ export default function Home() {
     }
 
     // If playing, update absolute end time for background persistence
-    const endTime = Date.now() + timeLeft * 1000;
-    localStorage.setItem("ambia_timer_end", endTime.toString());
-    localStorage.removeItem("ambia_timer_remaining");
+    // Use stored endTime if available and valid, otherwise calculate new one
+    const savedEndTime = localStorage.getItem("ambia_timer_end");
+    const endTime = savedEndTime ? parseInt(savedEndTime) : Date.now() + timeLeft * 1000;
+
+    // Ensure we don't recalculate endTime if it already matches our timeLeft (roughly)
+    if (!savedEndTime) {
+      localStorage.setItem("ambia_timer_end", endTime.toString());
+      localStorage.removeItem("ambia_timer_remaining");
+    }
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev !== null ? prev - 1 : null));
-    }, 1000);
+      const now = Date.now();
+      const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
+
+      // Faster check (100ms) prevents skipping second boundaries due to drift
+      setTimeLeft((prev) => (prev !== remaining ? remaining : prev));
+
+      if (remaining <= 0) {
+        handleStopAudio();
+      }
+    }, 100);
 
     return () => clearInterval(timer);
-  }, [timeLeft, stop, isMounted, isPlaying]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPlaying, isMounted, handleStopAudio, timeLeft === null]);
+
+  // Sync timer when coming back to the tab
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && timeLeft !== null && isPlaying) {
+        const savedEndTime = localStorage.getItem("ambia_timer_end");
+        if (savedEndTime) {
+          const remaining = Math.max(0, Math.floor((parseInt(savedEndTime) - Date.now()) / 1000));
+          setTimeLeft(remaining);
+          if (remaining <= 0) {
+            handleStopAudio();
+          }
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [timeLeft, isPlaying, handleStopAudio]);
 
   // Media Session API for OS integration
   useEffect(() => {
@@ -284,19 +318,19 @@ export default function Home() {
     setIsPlaying(nextState);
     if (nextState) {
       haptic.trigger("medium");
-      start(activeNoise, volume);
+      start(activeNoise, volume, timeLeft || undefined, handleStopAudio);
       dummyAudioRef.current?.play().catch(() => {});
     } else {
       haptic.trigger("light");
       stop();
       dummyAudioRef.current?.pause();
     }
-  }, [isPlaying, activeNoise, volume, start, stop, haptic]);
+  }, [isPlaying, activeNoise, volume, start, stop, haptic, timeLeft, handleStopAudio]);
 
   // Sync audio when noise type changes while playing
   useEffect(() => {
     if (isPlaying && isMounted) {
-      start(activeNoise, volume);
+      start(activeNoise, volume, timeLeft || undefined, handleStopAudio);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNoise, isPlaying, isMounted]);

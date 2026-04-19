@@ -54,7 +54,7 @@ export function useNoise() {
   }, []);
 
   const start = useCallback(
-    (type: NoiseType, volume: number) => {
+    (type: NoiseType, volume: number, durationSeconds?: number, onEnded?: () => void) => {
       if (typeof window === "undefined") return;
 
       if (!audioCtx.current) {
@@ -75,6 +75,7 @@ export function useNoise() {
 
       if (sourceNode.current) {
         try {
+          sourceNode.current.onended = null;
           sourceNode.current.stop();
         } catch {
           // Ignore errors from stopping source
@@ -86,8 +87,17 @@ export function useNoise() {
         sourceNode.current = audioCtx.current.createBufferSource();
         sourceNode.current.buffer = buffer;
         sourceNode.current.loop = true;
+
+        if (onEnded) {
+          sourceNode.current.onended = onEnded;
+        }
+
         sourceNode.current.connect(gainNode.current!);
         sourceNode.current.start();
+
+        if (durationSeconds && durationSeconds > 0) {
+          sourceNode.current.stop(audioCtx.current.currentTime + durationSeconds);
+        }
       }
     },
     [createNoiseBuffer],
@@ -96,6 +106,7 @@ export function useNoise() {
   const stop = useCallback(() => {
     if (sourceNode.current) {
       try {
+        sourceNode.current.onended = null;
         sourceNode.current.stop();
       } catch {
         // Ignore errors from stopping source
