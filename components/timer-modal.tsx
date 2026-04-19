@@ -19,17 +19,33 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 }) => {
   const haptic = useWebHaptics();
   const [customValue, setCustomValue] = useState("");
+  const [shouldRender, setShouldRender] = useState(isOpen);
+  const [isAnimate, setIsAnimate] = useState(false);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+      // Small delay to ensure the DOM is ready for the entry animation
+      const timer = setTimeout(() => setIsAnimate(true), 10);
+      return () => clearTimeout(timer);
+    } else {
+      setIsAnimate(false);
+      // Match this duration with your CSS transition duration
+      const timer = setTimeout(() => setShouldRender(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   React.useEffect(() => {
     if (!isOpen) return;
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   const handleSubmit = () => {
     haptic.trigger("medium");
@@ -37,25 +53,36 @@ export const TimerModal: React.FC<TimerModalProps> = ({
     if (!isNaN(mins) && mins > 0) {
       onSetCustomTimer(mins);
       setCustomValue("");
-      onClose();
+      handleClose();
     }
   };
 
   const handleClose = () => {
     haptic.trigger("light");
-    onClose();
+    setIsAnimate(false);
+    setTimeout(onClose, 500);
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
+    <div className={`fixed inset-0 z-[100] flex flex-col justify-end sm:justify-center overflow-y-auto overflow-x-hidden p-0 sm:p-6 transition-all duration-500 ${isAnimate ? "visible" : "invisible"}`}>
       <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-md animate-in fade-in duration-500" 
+        className={`fixed inset-0 bg-black/60 backdrop-blur-md transition-opacity duration-500 ${isAnimate ? "opacity-100" : "opacity-0"}`} 
         onClick={handleClose}
       ></div>
-      <div className="bg-surface-container-high/90 animate-in fade-in zoom-in slide-in-from-bottom-8 relative w-full max-w-sm rounded-3xl border border-white/10 p-10 shadow-2xl backdrop-blur-2xl duration-500">
+      
+      <div 
+        className={`relative mx-auto w-full max-w-sm bg-surface-container-high rounded-t-[2.5rem] sm:rounded-3xl border-t sm:border border-white/10 p-8 sm:p-10 shadow-2xl backdrop-blur-3xl sm:my-auto transition-all duration-500 ease-out ${
+          isAnimate 
+            ? "translate-y-0 opacity-100 scale-100" 
+            : "translate-y-full sm:translate-y-8 opacity-0 sm:scale-95"
+        }`}
+      >
+        {/* Mobile Handle */}
+        <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-8 sm:hidden" />
+        
         <button
           onClick={handleClose}
-          className="text-on-surface-variant hover:text-on-surface hover:bg-white/5 absolute top-5 right-5 flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-90"
+          className="text-on-surface-variant hover:text-on-surface hover:bg-white/5 absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full transition-all active:scale-90"
           aria-label="Close modal"
         >
           <X className="h-5 w-5" />
@@ -73,7 +100,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
             <h3 className="text-2xl font-bold tracking-tight">Custom Timer</h3>
           </div>
           <p className="text-on-surface-variant mb-10 text-sm leading-relaxed opacity-70">
-            Set a duration for your {activeNoise} soundscape. The timer will gently fade out the sound.
+            Set a duration for your {activeNoise} soundscape.
           </p>
         </div>
 
@@ -95,7 +122,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
               value={customValue}
               onChange={(e) => setCustomValue(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-              className="bg-surface-container-highest/50 rounded-2xl border border-white/5 px-5 py-4 text-lg font-medium transition-all outline-none focus:ring-2"
+              className="bg-surface-container-highest/50 rounded-2xl border border-white/5 px-6 py-4 text-lg font-medium transition-all outline-none focus:ring-2"
               style={{ 
                 ["--tw-ring-color" as any]: "var(--dynamic-primary)",
                 borderColor: customValue ? "var(--dynamic-primary)" : undefined
@@ -106,11 +133,12 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 
           <button
             onClick={handleSubmit}
-            className="w-full rounded-xl py-4 font-bold transition-all active:scale-95"
+            className="w-full rounded-2xl py-5 font-bold transition-all active:scale-95 mb-6 sm:mb-0"
             style={{
               backgroundColor: "var(--dynamic-primary)",
               color: "var(--dynamic-text)",
-              boxShadow: "0 10px 15px -3px var(--dynamic-glow)",
+              boxShadow: "0 10px 20px -5px var(--dynamic-glow)",
+              paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))"
             }}
           >
             Set Timer
