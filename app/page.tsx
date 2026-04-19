@@ -699,7 +699,7 @@ export default function Home() {
                   )}
                 </button>
 
-                <div className="relative h-1 flex-grow cursor-pointer overflow-hidden rounded-full bg-white/10">
+                <div className="relative h-1.5 flex-grow cursor-pointer overflow-hidden rounded-full bg-white/10">
                   <input
                     type="range"
                     min="0"
