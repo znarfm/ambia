@@ -281,6 +281,7 @@ export default function Home() {
           bgClass="bg-surface"
           overlayGradient="bg-gradient-to-b from-white/10 to-transparent"
           description="A static, pure wall of sound. Designed to mask sharp environmental interruptions and sharpen focus."
+          auraColors={["bg-white/20", "bg-sky-400/10", "bg-white/10"]}
         />
 
         <NoiseSection
@@ -291,6 +292,7 @@ export default function Home() {
           bgClass="bg-surface-container-low"
           textColorClass="text-[#FFB2BB]"
           description="Balanced and natural, mimicking the steady rhythm of rainfall or wind through heavy autumn leaves."
+          auraColors={["bg-rose-400/20", "bg-amber-300/10", "bg-rose-500/10"]}
         />
 
         <NoiseSection
@@ -301,6 +303,7 @@ export default function Home() {
           bgClass="bg-surface-container-lowest"
           textColorClass="text-[#E3C28E]"
           description="A deep, powerful rumble. Mimics the roar of a distant ocean or the low hum of a cavernous space."
+          auraColors={["bg-amber-600/25", "bg-orange-900/20", "bg-amber-500/15"]}
         />
       </main>
 

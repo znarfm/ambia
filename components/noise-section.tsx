@@ -14,6 +14,28 @@ interface NoiseSectionProps {
   auraColors?: string[];
 }
 
+const BackgroundAura: React.FC<{ colors: string[] }> = ({ colors }) => {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 select-none">
+      <div className="absolute inset-0 opacity-40 [perspective:1000px] [backface-visibility:hidden]">
+        <div 
+          className={`absolute -top-[25%] -left-[25%] w-[110%] h-[110%] rounded-full blur-[160px] animate-float-slow transform-gpu ${colors[0]}`}
+          style={{ animationDelay: "0s" }}
+        ></div>
+        <div 
+          className={`absolute -bottom-[25%] -right-[25%] w-[100%] h-[100%] rounded-full blur-[140px] animate-float-slow transform-gpu ${colors[1] || colors[0]}`}
+          style={{ animationDelay: "-5s" }}
+        ></div>
+        {colors[2] && (
+          <div 
+            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full blur-[120px] animate-pulse-slow transform-gpu ${colors[2]}`}
+          ></div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export const NoiseSection: React.FC<NoiseSectionProps> = ({
   id,
   title,
@@ -25,23 +47,11 @@ export const NoiseSection: React.FC<NoiseSectionProps> = ({
   accentColorClass = "text-primary/60",
   decorative,
   overlayGradient,
+  auraColors = ["bg-white/5", "bg-white/5"],
 }) => {
   return (
     <section id={id} className={`snap-section w-full pt-16 ${bgClass}`}>
-      {/* SVG Noise Filter (Cleaner than images) */}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03]">
-        <svg 
-          viewBox="0 0 200 200" 
-          xmlns="http://www.w3.org/2000/svg" 
-          className="h-full w-full"
-          preserveAspectRatio="none"
-        >
-          <filter id="noiseFilter">
-            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#noiseFilter)" />
-        </svg>
-      </div>
+      <BackgroundAura colors={auraColors} />
 
       <div className="absolute inset-0 z-0 opacity-20">
         <div className={`absolute inset-0 ${overlayGradient}`}></div>
