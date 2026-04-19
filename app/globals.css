@@ -68,23 +68,13 @@
 
 @layer utilities {
   .snap-container {
-    scroll-snap-type: y mandatory;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-outline-variant) transparent;
-    @apply flex-grow overflow-y-scroll h-full;
+    @apply h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
+
   .snap-container::-webkit-scrollbar {
-    width: 6px;
-  }
-  .snap-container::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .snap-container::-webkit-scrollbar-thumb {
-    background: var(--color-outline-variant);
-    border-radius: 10px;
-  }
-  .snap-container::-webkit-scrollbar-thumb:hover {
-    background: var(--color-primary);
+    display: none;
   }
   .snap-section {
     scroll-snap-align: start;

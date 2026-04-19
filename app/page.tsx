@@ -195,6 +195,24 @@ export default function Home() {
         <div className="w-6"></div>
       </header>
 
+      {/* Vertical Dot Indicator (Pagination) */}
+      <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-4">
+        {["white", "pink", "brown"].map((type, idx) => (
+          <button
+            key={type}
+            onClick={() => scrollToSection(idx)}
+            className="group relative flex items-center justify-center p-2"
+            aria-label={`Scroll to ${type} noise`}
+          >
+            <div className={`w-2 h-2 rounded-full transition-all duration-500 ${
+              activeNoise === type 
+                ? "bg-primary scale-125 shadow-[0_0_12px_rgba(227,194,142,0.6)]" 
+                : "bg-white/20 hover:bg-white/40"
+            }`}></div>
+          </button>
+        ))}
+      </nav>
+
       {/* Main Content: Snap Scroll Sections */}
       <main className="snap-container flex-grow">
         <NoiseSection
