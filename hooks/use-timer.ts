@@ -74,6 +74,7 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
 
     if (timeLeft !== null && timeLeft <= 0) {
       onStop();
+      clearTimer();
       return;
     }
 
@@ -99,6 +100,7 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
       if (remaining <= 0) {
         clearInterval(timer);
         onStop();
+        clearTimer();
       }
     }, 100);
 
@@ -113,7 +115,10 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
         if (savedEndTime) {
           const remaining = Math.max(0, Math.floor((parseInt(savedEndTime) - Date.now()) / 1000));
           setTimeLeft(remaining);
-          if (remaining <= 0) onStop();
+          if (remaining <= 0) {
+            onStop();
+            clearTimer();
+          }
         }
       }
     };
