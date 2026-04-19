@@ -73,8 +73,10 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
     if (isTimerInactive || !isMounted) return;
 
     if (timeLeft !== null && timeLeft <= 0) {
-      onStop();
-      clearTimer();
+      setTimeout(() => {
+        onStop();
+        clearTimer();
+      }, 0);
       return;
     }
 
@@ -105,7 +107,7 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
     }, 100);
 
     return () => clearInterval(timer);
-  }, [isPlaying, isMounted, onStop, isTimerInactive, timeLeft]);
+  }, [isPlaying, isMounted, onStop, isTimerInactive, timeLeft, clearTimer]);
 
   // Sync on visibility change
   useEffect(() => {
@@ -124,7 +126,7 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
-  }, [timeLeft, isPlaying, onStop]);
+  }, [timeLeft, isPlaying, onStop, clearTimer]);
 
   return { timeLeft, activeTimer, handleTimerSelect, setTimer, clearTimer };
 }

@@ -3,6 +3,7 @@
 import React from "react";
 import { Waves, Info, Sun, Moon } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
+import { ShortcutTooltip } from "./shortcut-tooltip";
 
 interface HeaderProps {
   resolvedTheme: string | undefined;
@@ -33,30 +34,34 @@ export function Header({ resolvedTheme, setTheme, setIsAboutModalOpen, isMounted
         </h1>
       </button>
       <div className="flex items-center gap-6">
-        <button
-          onClick={() => {
-            haptic.trigger("light");
-            setIsAboutModalOpen(true);
-          }}
-          className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-white/5 active:scale-90"
-          aria-label="About"
-        >
-          <Info className="h-5 w-5" />
-        </button>
-        <button
-          onClick={() => {
-            haptic.trigger("light");
-            setTheme(resolvedTheme === "dark" ? "light" : "dark");
-          }}
-          className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-white/5 active:scale-90"
-          aria-label="Toggle theme"
-        >
-          {!isMounted ? null : resolvedTheme === "dark" ? (
-            <Sun className="h-5 w-5" />
-          ) : (
-            <Moon className="h-5 w-5" />
-          )}
-        </button>
+        <ShortcutTooltip shortcut="A" position="bottom">
+          <button
+            onClick={() => {
+              haptic.trigger("light");
+              setIsAboutModalOpen(true);
+            }}
+            className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-white/5 active:scale-90"
+            aria-label="About"
+          >
+            <Info className="h-5 w-5" />
+          </button>
+        </ShortcutTooltip>
+        <ShortcutTooltip shortcut="M" position="bottom">
+          <button
+            onClick={() => {
+              haptic.trigger("light");
+              setTheme(resolvedTheme === "dark" ? "light" : "dark");
+            }}
+            className="text-on-surface-variant hover:text-on-surface flex h-10 w-10 items-center justify-center rounded-full transition-all hover:bg-white/5 active:scale-90"
+            aria-label="Toggle theme"
+          >
+            {!isMounted ? null : resolvedTheme === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </button>
+        </ShortcutTooltip>
       </div>
     </header>
   );
