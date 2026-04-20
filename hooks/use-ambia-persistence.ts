@@ -31,7 +31,7 @@ export function useAmbiaPersistence({
 
     setIsMounted(true);
     if (savedVolume) setVolume(parseInt(savedVolume, 10));
-    if (savedNoise) {
+    if (savedNoise && (NOISE_TYPES as readonly string[]).includes(savedNoise)) {
       setActiveNoise(savedNoise as NoiseType);
       setTimeout(() => {
         const idx = NOISE_TYPES.indexOf(savedNoise as NoiseType);
