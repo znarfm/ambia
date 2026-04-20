@@ -158,6 +158,8 @@ export function useNoise() {
         const buffer = createNoiseBuffer(type);
         if (buffer && audioCtx.current) {
           const source = audioCtx.current.createBufferSource();
+          sourceNode.current = source;
+
           source.buffer = buffer;
           source.loop = true;
 
@@ -171,8 +173,6 @@ export function useNoise() {
           if (durationSeconds && durationSeconds > 0) {
             source.stop(audioCtx.current.currentTime + durationSeconds);
           }
-
-          sourceNode.current = source;
         }
       } catch (err) {
         console.error("Failed to start noise:", err);
@@ -185,7 +185,8 @@ export function useNoise() {
 
   const setVolume = useCallback((volume: number) => {
     if (gainNode.current && audioCtx.current) {
-      const gainValue = Math.pow(volume / 100, 2) * 0.7;
+      const v = volume / 100;
+      const gainValue = v * v * NOISE_CONFIG.masterGain;
       gainNode.current.gain.setTargetAtTime(gainValue, audioCtx.current.currentTime, 0.1);
     }
   }, []);
