@@ -4,6 +4,7 @@ import React from "react";
 import { Timer, Plus, SkipBack, Play, Pause, SkipForward, Volume1, Volume2 } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { ShortcutTooltip } from "./shortcut-tooltip";
+import { NOISE_TYPES, type NoiseType } from "../hooks/use-noise";
 
 interface FooterProps {
   isPlaying: boolean;
@@ -120,8 +121,7 @@ export function Footer({
             <ShortcutTooltip shortcut="UP">
               <button
                 onClick={() => {
-                  const types = ["white", "pink", "brown"];
-                  const idx = types.indexOf(activeNoise);
+                  const idx = NOISE_TYPES.indexOf(activeNoise as NoiseType);
                   scrollToSection((idx - 1 + 3) % 3);
                 }}
                 className="text-on-surface-variant hover:text-on-surface p-2 transition-colors active:scale-90"
@@ -153,8 +153,7 @@ export function Footer({
             <ShortcutTooltip shortcut="DOWN">
               <button
                 onClick={() => {
-                  const types = ["white", "pink", "brown"];
-                  const idx = types.indexOf(activeNoise);
+                  const idx = NOISE_TYPES.indexOf(activeNoise as NoiseType);
                   scrollToSection((idx + 1) % 3);
                 }}
                 className="text-on-surface p-2 transition-colors active:scale-90"
