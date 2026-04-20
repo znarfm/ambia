@@ -20,13 +20,9 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
     setTimeout(onClose, 500);
   }, [onClose, haptic]);
 
-  // Derived state to handle mounting immediately
-  if (isOpen && !shouldRender) {
-    setShouldRender(true);
-  }
-
   React.useEffect(() => {
     if (isOpen) {
+      setShouldRender(true);
       const timer = setTimeout(() => setIsAnimate(true), 10);
       return () => clearTimeout(timer);
     } else {
@@ -49,7 +45,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen, handleClose]);
 
-  if (!shouldRender) return null;
+  if (!isOpen && !shouldRender) return null;
 
   return (
     <div
