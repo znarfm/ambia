@@ -19,10 +19,7 @@ const APP_DESCRIPTION =
   "Immersive procedural white, pink, and brown noise for focus, sleep, and relaxation.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://ambia.meinard.dev"),
-  ),
+  metadataBase: new URL("https://ambia.meinard.dev"),
   applicationName: APP_NAME,
   title: {
     default: APP_DEFAULT_TITLE,
@@ -30,7 +27,12 @@ export const metadata: Metadata = {
   },
   description: APP_DESCRIPTION,
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon", type: "image/png", sizes: "32x32" },
+    ],
+    shortcut: "/icon",
+    apple: "/apple-icon",
   },
   alternates: {
     canonical: "/",
