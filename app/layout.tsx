@@ -21,7 +21,7 @@ const APP_DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"),
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://ambia.meinard.dev"),
   ),
   applicationName: APP_NAME,
   title: {
@@ -29,6 +29,12 @@ export const metadata: Metadata = {
     template: APP_TITLE_TEMPLATE,
   },
   description: APP_DESCRIPTION,
+  icons: {
+    icon: "/favicon.svg",
+  },
+  alternates: {
+    canonical: "/",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -40,28 +46,22 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: APP_NAME,
+    url: "/",
+    locale: "en_US",
     title: {
       default: APP_DEFAULT_TITLE,
       template: APP_TITLE_TEMPLATE,
     },
     description: APP_DESCRIPTION,
-    images: [
-      {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: "Ambia | Sensory Sanctuary",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
+    site: "@znarfm",
     title: {
       default: APP_DEFAULT_TITLE,
       template: APP_TITLE_TEMPLATE,
     },
     description: APP_DESCRIPTION,
-    images: ["/opengraph-image"],
   },
   manifest: "/manifest.json",
 };
@@ -77,8 +77,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": APP_NAME,
+    "description": APP_DESCRIPTION,
+    "url": "https://ambia.meinard.dev",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any",
+    "abstract": "A minimalist procedural noise generator for focus and relaxation.",
+  };
+
   return (
     <html lang="en" className={`${manrope.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="flex min-h-full flex-col">
         <SerwistProvider swUrl="/serwist/sw.js">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
