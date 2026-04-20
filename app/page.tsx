@@ -11,10 +11,11 @@ import { Footer } from "../components/footer";
 import { NavDots } from "../components/nav-dots";
 import { AboutModal } from "../components/about-modal";
 
-import { useNoise, type NoiseType } from "../hooks/use-noise";
+import { useNoise, type NoiseType, NOISE_TYPES } from "../hooks/use-noise";
 import { useTimer } from "../hooks/use-timer";
 import { useMediaSession } from "../hooks/use-media-session";
 import { useKeyboardShortcuts } from "../hooks/use-keyboard-shortcuts";
+import { formatTime } from "../utils/format-time";
 
 const TimerModal = dynamic(
   () => import("../components/timer-modal").then((mod) => mod.TimerModal),
@@ -59,6 +60,14 @@ export default function Home() {
     handleStopAudio,
   );
 
+  const openAbout = useCallback(() => {
+    if (!isTimerModalOpen) setIsAboutModalOpen(true);
+  }, [isTimerModalOpen]);
+
+  const openTimer = useCallback(() => {
+    if (!isAboutModalOpen) setIsTimerModalOpen(true);
+  }, [isAboutModalOpen]);
+
   const stopAll = useCallback(() => {
     handleStopAudio();
     clearTimer();
@@ -69,13 +78,13 @@ export default function Home() {
     const savedVolume = localStorage.getItem("ambia_volume");
     const savedNoise = localStorage.getItem("ambia_noise");
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
-    if (savedVolume) setVolume(parseInt(savedVolume));
+    if (savedVolume) setVolume(parseInt(savedVolume, 10));
     if (savedNoise) {
       setActiveNoise(savedNoise as NoiseType);
       setTimeout(() => {
-        const sections = ["white", "pink", "brown"];
-        const idx = sections.indexOf(savedNoise);
+        const idx = NOISE_TYPES.indexOf(savedNoise as NoiseType);
         if (idx !== -1) sectionsRef.current[idx]?.scrollIntoView({ behavior: "instant" });
       }, 0);
     }
@@ -115,7 +124,8 @@ export default function Home() {
     if (isPlaying && isMounted) {
       start(activeNoise, volume, timeLeft || undefined, handleStopAudio);
     }
-  }, [activeNoise, isPlaying, isMounted, start, volume, timeLeft, handleStopAudio]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeNoise, isPlaying, isMounted, start, handleStopAudio]);
 
   useMediaSession({
     isPlaying,
@@ -125,11 +135,11 @@ export default function Home() {
     onPause: handlePlayPause,
     onStop: stopAll,
     onPrevious: () => {
-      const idx = (["white", "pink", "brown"].indexOf(activeNoise) - 1 + 3) % 3;
+      const idx = (NOISE_TYPES.indexOf(activeNoise) - 1 + 3) % 3;
       scrollToSection(idx);
     },
     onNext: () => {
-      const idx = (["white", "pink", "brown"].indexOf(activeNoise) + 1) % 3;
+      const idx = (NOISE_TYPES.indexOf(activeNoise) + 1) % 3;
       scrollToSection(idx);
     },
   });
@@ -137,18 +147,18 @@ export default function Home() {
   useKeyboardShortcuts({
     onPlayPause: handlePlayPause,
     onPrevSection: () => {
-      const idx = (["white", "pink", "brown"].indexOf(activeNoise) - 1 + 3) % 3;
+      const idx = (NOISE_TYPES.indexOf(activeNoise) - 1 + 3) % 3;
       scrollToSection(idx);
     },
     onNextSection: () => {
-      const idx = (["white", "pink", "brown"].indexOf(activeNoise) + 1) % 3;
+      const idx = (NOISE_TYPES.indexOf(activeNoise) + 1) % 3;
       scrollToSection(idx);
     },
     onVolUp: () => setVolume((v) => Math.min(100, v + 5)),
     onVolDown: () => setVolume((v) => Math.max(0, v - 5)),
     onToggleTheme: () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
-    onOpenTimer: () => setIsTimerModalOpen(true),
-    onOpenAbout: () => setIsAboutModalOpen(true),
+    onOpenTimer: openTimer,
+    onOpenAbout: openAbout,
   });
 
   // Intersection Observer for scroll sync
@@ -169,22 +179,13 @@ export default function Home() {
     return () => observer.disconnect();
   }, [isMounted]);
 
-  const formatTime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return hrs > 0
-      ? `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-      : `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   return (
     <div className={`flex h-dvh flex-col transition-colors duration-700 noise-${activeNoise}`}>
       <Header
         isMounted={isMounted}
         resolvedTheme={resolvedTheme}
         setTheme={setTheme}
-        setIsAboutModalOpen={setIsAboutModalOpen}
+        setIsAboutModalOpen={openAbout}
       />
 
       <NavDots activeNoise={activeNoise} scrollToSection={scrollToSection} />
@@ -233,7 +234,7 @@ export default function Home() {
         activeTimer={activeTimer}
         formatTime={formatTime}
         handleTimerSelect={handleTimerSelect}
-        setIsTimerModalOpen={setIsTimerModalOpen}
+        setIsTimerModalOpen={openTimer}
         handlePlayPause={handlePlayPause}
         scrollToSection={scrollToSection}
         activeNoise={activeNoise}

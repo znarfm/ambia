@@ -2,7 +2,16 @@
 
 import { useRef, useCallback } from "react";
 
-export type NoiseType = "white" | "pink" | "brown";
+export const NOISE_TYPES = ["white", "pink", "brown"] as const;
+export type NoiseType = (typeof NOISE_TYPES)[number];
+
+const WARMUP_ITERATIONS = 1000;
+
+const runWarmup = (fn: () => void) => {
+  for (let i = 0; i < WARMUP_ITERATIONS; i++) {
+    fn();
+  }
+};
 
 export function useNoise() {
   const audioCtx = useRef<AudioContext | null>(null);
@@ -25,11 +34,15 @@ export function useNoise() {
         output[i] = (Math.random() * 2 - 1) * 0.4;
       }
     } else if (type === "pink") {
-      let b0, b1, b2, b3, b4, b5, b6;
-      b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
+      let b0 = 0.0,
+        b1 = 0.0,
+        b2 = 0.0,
+        b3 = 0.0,
+        b4 = 0.0,
+        b5 = 0.0,
+        b6 = 0.0;
 
-      // Warm up filter (1000 iterations)
-      for (let i = 0; i < 1000; i++) {
+      const updatePink = () => {
         const white = Math.random() * 2 - 1;
         b0 = 0.99886 * b0 + white * 0.0555179;
         b1 = 0.99332 * b1 + white * 0.0750759;
@@ -37,40 +50,46 @@ export function useNoise() {
         b3 = 0.8665 * b3 + white * 0.3104856;
         b4 = 0.55 * b4 + white * 0.5329522;
         b5 = -0.7616 * b5 - white * 0.016898;
+        const out = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
         b6 = white * 0.115926;
-      }
+        return out;
+      };
+
+      runWarmup(updatePink);
 
       for (let i = 0; i < bufferSize; i++) {
-        const white = Math.random() * 2 - 1;
-        b0 = 0.99886 * b0 + white * 0.0555179;
-        b1 = 0.99332 * b1 + white * 0.0750759;
-        b2 = 0.969 * b2 + white * 0.153852;
-        b3 = 0.8665 * b3 + white * 0.3104856;
-        b4 = 0.55 * b4 + white * 0.5329522;
-        b5 = -0.7616 * b5 - white * 0.016898;
-        output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-        output[i] *= 0.11;
-        b6 = white * 0.115926;
+        output[i] = updatePink() * 0.11;
       }
     } else if (type === "brown") {
       let lastOut = 0.0;
 
-      // Warm up filter (1000 iterations)
-      for (let i = 0; i < 1000; i++) {
+      const updateBrown = () => {
         const white = Math.random() * 2 - 1;
         lastOut = (lastOut + 0.02 * white) / 1.02;
-      }
+        return lastOut;
+      };
+
+      runWarmup(updateBrown);
 
       for (let i = 0; i < bufferSize; i++) {
-        const white = Math.random() * 2 - 1;
-        const out = (lastOut + 0.02 * white) / 1.02;
-        output[i] = out * 3.5;
-        lastOut = out;
+        output[i] = updateBrown() * 3.5;
       }
     }
 
     buffers.current[type] = buffer;
     return buffer;
+  }, []);
+
+  const stop = useCallback(() => {
+    if (sourceNode.current) {
+      try {
+        sourceNode.current.onended = null;
+        sourceNode.current.stop();
+      } catch {
+        // Ignore errors from stopping source
+      }
+      sourceNode.current = null;
+    }
   }, []);
 
   const start = useCallback(
@@ -93,14 +112,7 @@ export function useNoise() {
       const gainValue = Math.pow(volume / 100, 2) * 0.7;
       gainNode.current!.gain.setValueAtTime(gainValue, audioCtx.current.currentTime);
 
-      if (sourceNode.current) {
-        try {
-          sourceNode.current.onended = null;
-          sourceNode.current.stop();
-        } catch {
-          // Ignore
-        }
-      }
+      stop();
 
       const buffer = createNoiseBuffer(type);
       if (buffer && audioCtx.current) {
@@ -120,21 +132,8 @@ export function useNoise() {
         }
       }
     },
-    [createNoiseBuffer],
+    [createNoiseBuffer, stop],
   );
-
-
-  const stop = useCallback(() => {
-    if (sourceNode.current) {
-      try {
-        sourceNode.current.onended = null;
-        sourceNode.current.stop();
-      } catch {
-        // Ignore errors from stopping source
-      }
-      sourceNode.current = null;
-    }
-  }, []);
 
   const setVolume = useCallback((volume: number) => {
     if (gainNode.current && audioCtx.current) {

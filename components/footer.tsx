@@ -4,6 +4,7 @@ import React from "react";
 import { Timer, Plus, SkipBack, Play, Pause, SkipForward, Volume1, Volume2 } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
 import { ShortcutTooltip } from "./shortcut-tooltip";
+import { NOISE_TYPES, type NoiseType } from "../hooks/use-noise";
 
 interface FooterProps {
   isPlaying: boolean;
@@ -20,6 +21,9 @@ interface FooterProps {
   handleVolumeWheel: (e: React.WheelEvent) => void;
 }
 
+const BASE_TIMERS = ["15", "30", "60"];
+const PRESET_TIMERS = BASE_TIMERS.map((m) => `${m}M`);
+
 export function Footer({
   isPlaying,
   volume,
@@ -35,6 +39,8 @@ export function Footer({
   handleVolumeWheel,
 }: FooterProps) {
   const haptic = useWebHaptics();
+
+  const isCustomTimerActive = activeTimer !== null && !PRESET_TIMERS.includes(activeTimer);
 
   return (
     <footer className="bg-surface/80 border-outline-variant/10 safe-area-bottom z-50 flex-shrink-0 border-t backdrop-blur-lg transition-all duration-500">
@@ -59,7 +65,7 @@ export function Footer({
               )}
             </div>
             <div className="flex gap-2">
-              {["15", "30", "60"].map((mins) => (
+              {BASE_TIMERS.map((mins) => (
                 <button
                   key={mins}
                   onClick={() =>
@@ -89,14 +95,8 @@ export function Footer({
                   onClick={() => setIsTimerModalOpen(true)}
                   className="text-on-surface hover:text-primary bg-surface-variant border-outline-variant hover:bg-surface-variant/80 flex h-11 w-11 items-center justify-center rounded-xl border transition-all active:scale-95"
                   style={{
-                    backgroundColor:
-                      activeTimer && !["15", "30", "60"].map((m) => `${m}M`).includes(activeTimer!)
-                        ? "var(--dynamic-container)"
-                        : undefined,
-                    color:
-                      activeTimer && !["15", "30", "60"].map((m) => `${m}M`).includes(activeTimer!)
-                        ? "var(--dynamic-primary)"
-                        : undefined,
+                    backgroundColor: isCustomTimerActive ? "var(--dynamic-container)" : undefined,
+                    color: isCustomTimerActive ? "var(--dynamic-primary)" : undefined,
                   }}
                   aria-label="Set custom timer"
                 >
@@ -120,8 +120,7 @@ export function Footer({
             <ShortcutTooltip shortcut="UP">
               <button
                 onClick={() => {
-                  const types = ["white", "pink", "brown"];
-                  const idx = types.indexOf(activeNoise);
+                  const idx = NOISE_TYPES.indexOf(activeNoise as NoiseType);
                   scrollToSection((idx - 1 + 3) % 3);
                 }}
                 className="text-on-surface-variant hover:text-on-surface p-2 transition-colors active:scale-90"
@@ -153,8 +152,7 @@ export function Footer({
             <ShortcutTooltip shortcut="DOWN">
               <button
                 onClick={() => {
-                  const types = ["white", "pink", "brown"];
-                  const idx = types.indexOf(activeNoise);
+                  const idx = NOISE_TYPES.indexOf(activeNoise as NoiseType);
                   scrollToSection((idx + 1) % 3);
                 }}
                 className="text-on-surface p-2 transition-colors active:scale-90"
@@ -173,9 +171,11 @@ export function Footer({
                 onWheel={handleVolumeWheel}
               >
                 <button
-                  onClick={() => setVolume(0)}
+                  onClick={() =>
+                    setVolume((v) => Math.max(0, (typeof v === "number" ? v : volume) - 5))
+                  }
                   className="text-on-surface transition-colors"
-                  aria-label="Mute volume"
+                  aria-label="Decrease volume"
                 >
                   {volume === 0 ? (
                     <Volume1 className="text-error h-4 w-4" />
@@ -191,7 +191,7 @@ export function Footer({
                     max="100"
                     value={volume}
                     onInput={() => haptic.trigger("selection")}
-                    onChange={(e) => setVolume(parseInt(e.target.value))}
+                    onChange={(e) => setVolume(parseInt(e.target.value, 10))}
                     className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                     aria-label="Volume slider"
                   />
@@ -205,9 +205,11 @@ export function Footer({
                 </div>
 
                 <button
-                  onClick={() => setVolume(100)}
+                  onClick={() =>
+                    setVolume((v) => Math.min(100, (typeof v === "number" ? v : volume) + 5))
+                  }
                   className="text-on-surface transition-colors"
-                  aria-label="Maximum volume"
+                  aria-label="Increase volume"
                 >
                   <Volume2 className="h-4 w-4" />
                 </button>
