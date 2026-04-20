@@ -31,7 +31,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 
   const handleSubmit = React.useCallback(() => {
     haptic.trigger("medium");
-    const mins = parseInt(customValue);
+    const mins = parseInt(customValue, 10);
     if (!isNaN(mins) && mins > 0) {
       onSetCustomTimer(mins);
       setCustomValue("");

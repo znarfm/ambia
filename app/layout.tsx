@@ -19,15 +19,24 @@ const APP_DESCRIPTION =
   "Immersive procedural white, pink, and brown noise for focus, sleep, and relaxation.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000",
-  ),
+  metadataBase: new URL("https://ambia.meinard.dev"),
   applicationName: APP_NAME,
   title: {
     default: APP_DEFAULT_TITLE,
     template: APP_TITLE_TEMPLATE,
   },
   description: APP_DESCRIPTION,
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon", type: "image/png", sizes: "32x32" },
+    ],
+    shortcut: "/icon",
+    apple: "/apple-icon",
+  },
+  alternates: {
+    canonical: "/",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -39,6 +48,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: APP_NAME,
+    url: "/",
+    locale: "en_US",
     title: {
       default: APP_DEFAULT_TITLE,
       template: APP_TITLE_TEMPLATE,
@@ -46,7 +57,8 @@ export const metadata: Metadata = {
     description: APP_DESCRIPTION,
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
+    site: "@znarfm",
     title: {
       default: APP_DEFAULT_TITLE,
       template: APP_TITLE_TEMPLATE,
@@ -67,8 +79,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": APP_NAME,
+    "description": APP_DESCRIPTION,
+    "url": "https://ambia.meinard.dev",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Any",
+    "abstract": "A minimalist procedural noise generator for focus and relaxation.",
+  };
+
   return (
     <html lang="en" className={`${manrope.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="flex min-h-full flex-col">
         <SerwistProvider swUrl="/serwist/sw.js">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

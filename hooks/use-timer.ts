@@ -17,13 +17,13 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
       const savedLabel = localStorage.getItem("ambia_timer_label");
 
       if (savedRemaining) {
-        const remaining = parseInt(savedRemaining);
+        const remaining = parseInt(savedRemaining, 10);
         if (remaining > 0) {
           setTimeLeft(remaining);
           setActiveTimer(savedLabel);
         }
       } else if (savedEndTime) {
-        const endTime = parseInt(savedEndTime);
+        const endTime = parseInt(savedEndTime, 10);
         const remaining = Math.floor((endTime - Date.now()) / 1000);
         if (remaining > 0) {
           setTimeLeft(remaining);
@@ -62,7 +62,7 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
         clearTimer();
         return;
       }
-      setTimer(parseInt(timeStr), `${timeStr}M`);
+      setTimer(parseInt(timeStr, 10), `${timeStr}M`);
     },
     [clearTimer, setTimer],
   );
@@ -91,7 +91,7 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
 
     if (!endTimeRef.current) {
       const saved = localStorage.getItem("ambia_timer_end");
-      endTimeRef.current = saved ? parseInt(saved) : Date.now() + (timeLeft || 0) * 1000;
+      endTimeRef.current = saved ? parseInt(saved, 10) : Date.now() + (timeLeft || 0) * 1000;
       localStorage.setItem("ambia_timer_end", endTimeRef.current.toString());
       localStorage.removeItem("ambia_timer_remaining");
     }
@@ -115,7 +115,7 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
       if (document.visibilityState === "visible" && timeLeft !== null && isPlaying) {
         const savedEndTime = localStorage.getItem("ambia_timer_end");
         if (savedEndTime) {
-          const remaining = Math.max(0, Math.floor((parseInt(savedEndTime) - Date.now()) / 1000));
+          const remaining = Math.max(0, Math.floor((parseInt(savedEndTime, 10) - Date.now()) / 1000));
           setTimeLeft(remaining);
           if (remaining <= 0) {
             onStop();

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { NOISE_TYPES } from "../hooks/use-noise";
 
 interface NavDotsProps {
   activeNoise: string;
@@ -8,11 +9,9 @@ interface NavDotsProps {
 }
 
 export function NavDots({ activeNoise, scrollToSection }: NavDotsProps) {
-  const types = ["white", "pink", "brown"];
-
   return (
     <nav className="fixed top-1/2 right-10 z-40 hidden -translate-y-1/2 flex-col gap-6 md:flex">
-      {types.map((type, idx) => (
+      {NOISE_TYPES.map((type, idx) => (
         <button
           key={type}
           onClick={() => scrollToSection(idx)}
