@@ -15,6 +15,7 @@ import { useNoise, type NoiseType, NOISE_TYPES } from "../hooks/use-noise";
 import { useTimer } from "../hooks/use-timer";
 import { useMediaSession } from "../hooks/use-media-session";
 import { useKeyboardShortcuts } from "../hooks/use-keyboard-shortcuts";
+import { formatTime } from "../utils/format-time";
 
 const TimerModal = dynamic(
   () => import("../components/timer-modal").then((mod) => mod.TimerModal),
@@ -168,15 +169,6 @@ export default function Home() {
     sections.forEach((s) => s && observer.observe(s));
     return () => observer.disconnect();
   }, [isMounted]);
-
-  const formatTime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return hrs > 0
-      ? `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-      : `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
 
   return (
     <div className={`flex h-dvh flex-col transition-colors duration-700 noise-${activeNoise}`}>
