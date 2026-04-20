@@ -41,6 +41,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 
   React.useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShouldRender(true);
       const timer = setTimeout(() => setIsAnimate(true), 10);
       return () => clearTimeout(timer);

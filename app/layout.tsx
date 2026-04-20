@@ -82,12 +82,12 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    "name": APP_NAME,
-    "description": APP_DESCRIPTION,
-    "url": "https://ambia.meinard.dev",
-    "applicationCategory": "MultimediaApplication",
-    "operatingSystem": "Any",
-    "abstract": "A minimalist procedural noise generator for focus and relaxation.",
+    name: APP_NAME,
+    description: APP_DESCRIPTION,
+    url: "https://ambia.meinard.dev",
+    applicationCategory: "MultimediaApplication",
+    operatingSystem: "Any",
+    abstract: "A minimalist procedural noise generator for focus and relaxation.",
   };
 
   return (

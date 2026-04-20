@@ -34,7 +34,13 @@ export function useNoise() {
         output[i] = (Math.random() * 2 - 1) * 0.4;
       }
     } else if (type === "pink") {
-      let b0 = 0.0, b1 = 0.0, b2 = 0.0, b3 = 0.0, b4 = 0.0, b5 = 0.0, b6 = 0.0;
+      let b0 = 0.0,
+        b1 = 0.0,
+        b2 = 0.0,
+        b3 = 0.0,
+        b4 = 0.0,
+        b5 = 0.0,
+        b6 = 0.0;
 
       const updatePink = () => {
         const white = Math.random() * 2 - 1;

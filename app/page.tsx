@@ -124,6 +124,7 @@ export default function Home() {
     if (isPlaying && isMounted) {
       start(activeNoise, volume, timeLeft || undefined, handleStopAudio);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeNoise, isPlaying, isMounted, start, handleStopAudio]);
 
   useMediaSession({

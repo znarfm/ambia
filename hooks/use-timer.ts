@@ -115,7 +115,10 @@ export function useTimer(isMounted: boolean, isPlaying: boolean, onStop: () => v
       if (document.visibilityState === "visible" && timeLeft !== null && isPlaying) {
         const savedEndTime = localStorage.getItem("ambia_timer_end");
         if (savedEndTime) {
-          const remaining = Math.max(0, Math.floor((parseInt(savedEndTime, 10) - Date.now()) / 1000));
+          const remaining = Math.max(
+            0,
+            Math.floor((parseInt(savedEndTime, 10) - Date.now()) / 1000),
+          );
           setTimeLeft(remaining);
           if (remaining <= 0) {
             onStop();

@@ -11,7 +11,7 @@ export default function NotFound() {
       <div className="space-y-3">
         <h2 className="text-2xl font-bold tracking-tight">Lost in the noise</h2>
         <p className="text-on-surface-variant max-w-xs text-sm leading-relaxed">
-          The soundscape you're looking for doesn't exist or has moved.
+          The soundscape you&apos;re looking for doesn&apos;t exist or has moved.
         </p>
       </div>
 
