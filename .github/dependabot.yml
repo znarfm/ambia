@@ -4,3 +4,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+
+  # Ignore .agents skills web-haptics
+  - package-ecosystem: "npm"
+    directory: "/.agents/skills/web-haptics"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+    ignore:
+      - dependency-name: "*"
