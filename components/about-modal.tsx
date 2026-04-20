@@ -77,10 +77,10 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <div
-                className="bg-primary/10 rounded-xl p-2.5"
+                className="bg-primary/10 shrink-0 rounded-xl p-2.5"
                 style={{ color: "var(--dynamic-primary)" }}
               >
-                <Info className="h-6 w-6" />
+                <Info className="h-6 w-6 shrink-0" />
               </div>
               <h2 className="text-3xl font-bold tracking-tight">About Ambia</h2>
             </div>
@@ -102,36 +102,40 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
               across different populations. Ambia offers a customizable utility to mask distractions
               and stabilize your acoustic environment.
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-col gap-3">
               <a
                 href="https://youtu.be/-rUBgPiQngg?t=335"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border-on-surface/5 bg-on-surface/5 hover:bg-on-surface/10 flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition-all"
+                className="border-on-surface/5 bg-on-surface/5 hover:bg-on-surface/10 flex w-full items-center gap-2 rounded-full border px-4 py-3 text-left text-xs font-medium transition-all"
               >
-                <MonitorPlay className="h-3.5 w-3.5" />
-                Types of Noise and Their Names
-                <ExternalLink className="h-3 w-3 opacity-50" />
+                <MonitorPlay className="h-3.5 w-3.5 shrink-0" />
+                <span className="flex-grow">Types of Noise and Their Names</span>
+                <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
               </a>
               <a
                 href="https://acoustics.asn.au/conference_proceedings/AAS2024/papers/p76.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border-on-surface/5 bg-on-surface/5 hover:bg-on-surface/10 flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition-all"
+                className="border-on-surface/5 bg-on-surface/5 hover:bg-on-surface/10 flex w-full items-center gap-2 rounded-full border px-4 py-3 text-left text-xs font-medium transition-all"
               >
-                <BookOpen className="h-3.5 w-3.5" />
-                The effect of white noise and “coloured” noise on cognition and sleep
-                <ExternalLink className="h-3 w-3 opacity-50" />
+                <BookOpen className="h-3.5 w-3.5 shrink-0" />
+                <span className="flex-grow">
+                  The effect of white noise and “coloured” noise on cognition and sleep
+                </span>
+                <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
               </a>
               <a
                 href="https://journals.lww.com/nohe/fulltext/2020/22040/spectral_content__colour__of_noise_exposure.3.aspx"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border-on-surface/5 bg-on-surface/5 hover:bg-on-surface/10 flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-medium transition-all"
+                className="border-on-surface/5 bg-on-surface/5 hover:bg-on-surface/10 flex w-full items-center gap-2 rounded-full border px-4 py-3 text-left text-xs font-medium transition-all"
               >
-                <BookOpen className="h-3.5 w-3.5" />
-                Spectral Content (color) of Noise Exposure Affects Work Efficiency
-                <ExternalLink className="h-3 w-3 opacity-50" />
+                <BookOpen className="h-3.5 w-3.5 shrink-0" />
+                <span className="flex-grow">
+                  Spectral Content (color) of Noise Exposure Affects Work Efficiency
+                </span>
+                <ExternalLink className="h-3 w-3 shrink-0 opacity-50" />
               </a>
             </div>
           </div>
