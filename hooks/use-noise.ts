@@ -74,6 +74,18 @@ export function useNoise() {
     return buffer;
   }, []);
 
+  const stop = useCallback(() => {
+    if (sourceNode.current) {
+      try {
+        sourceNode.current.onended = null;
+        sourceNode.current.stop();
+      } catch {
+        // Ignore errors from stopping source
+      }
+      sourceNode.current = null;
+    }
+  }, []);
+
   const start = useCallback(
     async (type: NoiseType, volume: number, durationSeconds?: number, onEnded?: () => void) => {
       if (typeof window === "undefined") return;
@@ -94,14 +106,7 @@ export function useNoise() {
       const gainValue = Math.pow(volume / 100, 2) * 0.7;
       gainNode.current!.gain.setValueAtTime(gainValue, audioCtx.current.currentTime);
 
-      if (sourceNode.current) {
-        try {
-          sourceNode.current.onended = null;
-          sourceNode.current.stop();
-        } catch {
-          // Ignore
-        }
-      }
+      stop();
 
       const buffer = createNoiseBuffer(type);
       if (buffer && audioCtx.current) {
@@ -121,21 +126,8 @@ export function useNoise() {
         }
       }
     },
-    [createNoiseBuffer],
+    [createNoiseBuffer, stop],
   );
-
-
-  const stop = useCallback(() => {
-    if (sourceNode.current) {
-      try {
-        sourceNode.current.onended = null;
-        sourceNode.current.stop();
-      } catch {
-        // Ignore errors from stopping source
-      }
-      sourceNode.current = null;
-    }
-  }, []);
 
   const setVolume = useCallback((volume: number) => {
     if (gainNode.current && audioCtx.current) {
