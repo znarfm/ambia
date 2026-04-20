@@ -69,6 +69,7 @@ export default function Home() {
     const savedVolume = localStorage.getItem("ambia_volume");
     const savedNoise = localStorage.getItem("ambia_noise");
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
     if (savedVolume) setVolume(parseInt(savedVolume));
     if (savedNoise) {
