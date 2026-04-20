@@ -39,13 +39,9 @@ export const TimerModal: React.FC<TimerModalProps> = ({
     }
   }, [customValue, onSetCustomTimer, handleClose, haptic]);
 
-  // Derived state to handle mounting immediately
-  if (isOpen && !shouldRender) {
-    setShouldRender(true);
-  }
-
   React.useEffect(() => {
     if (isOpen) {
+      setShouldRender(true);
       const timer = setTimeout(() => setIsAnimate(true), 10);
       return () => clearTimeout(timer);
     } else {
@@ -60,14 +56,14 @@ export const TimerModal: React.FC<TimerModalProps> = ({
   }, [isOpen]);
 
   React.useEffect(() => {
-    if (isOpen && shouldRender) {
+    if (isOpen) {
       // Small delay to ensure modal is visible/rendered
       const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [isOpen, shouldRender]);
+  }, [isOpen]);
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -78,7 +74,7 @@ export const TimerModal: React.FC<TimerModalProps> = ({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isOpen, handleClose]);
 
-  if (!shouldRender) return null;
+  if (!isOpen && !shouldRender) return null;
 
   return (
     <div
