@@ -171,9 +171,9 @@ export function Footer({
                 onWheel={handleVolumeWheel}
               >
                 <button
-                  onClick={() => setVolume(0)}
+                  onClick={() => setVolume((v) => Math.max(0, (typeof v === "number" ? v : volume) - 5))}
                   className="text-on-surface transition-colors"
-                  aria-label="Mute volume"
+                  aria-label="Decrease volume"
                 >
                   {volume === 0 ? (
                     <Volume1 className="text-error h-4 w-4" />
@@ -203,9 +203,9 @@ export function Footer({
                 </div>
 
                 <button
-                  onClick={() => setVolume(100)}
+                  onClick={() => setVolume((v) => Math.min(100, (typeof v === "number" ? v : volume) + 5))}
                   className="text-on-surface transition-colors"
-                  aria-label="Maximum volume"
+                  aria-label="Increase volume"
                 >
                   <Volume2 className="h-4 w-4" />
                 </button>
