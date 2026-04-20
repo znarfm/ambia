@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 
 export const NOISE_TYPES = ["white", "pink", "brown"] as const;
 export type NoiseType = (typeof NOISE_TYPES)[number];
@@ -18,6 +18,15 @@ export function useNoise() {
   const gainNode = useRef<GainNode | null>(null);
   const sourceNode = useRef<AudioBufferSourceNode | null>(null);
   const buffers = useRef<Record<string, AudioBuffer>>({});
+  const isInitializing = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      if (audioCtx.current) {
+        audioCtx.current.close().catch(() => {});
+      }
+    };
+  }, []);
 
   const createNoiseBuffer = useCallback((type: NoiseType) => {
     if (!audioCtx.current) return null;
@@ -94,42 +103,52 @@ export function useNoise() {
 
   const start = useCallback(
     async (type: NoiseType, volume: number, durationSeconds?: number, onEnded?: () => void) => {
-      if (typeof window === "undefined") return;
+      if (typeof window === "undefined" || isInitializing.current) return;
 
-      if (!audioCtx.current) {
-        const AudioContextClass =
-          window.AudioContext ||
-          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-        audioCtx.current = new AudioContextClass();
-        gainNode.current = audioCtx.current.createGain();
-        gainNode.current.connect(audioCtx.current.destination);
-      }
+      try {
+        isInitializing.current = true;
 
-      if (audioCtx.current.state === "suspended") {
-        await audioCtx.current.resume();
-      }
-
-      const gainValue = Math.pow(volume / 100, 2) * 0.7;
-      gainNode.current!.gain.setValueAtTime(gainValue, audioCtx.current.currentTime);
-
-      stop();
-
-      const buffer = createNoiseBuffer(type);
-      if (buffer && audioCtx.current) {
-        sourceNode.current = audioCtx.current.createBufferSource();
-        sourceNode.current.buffer = buffer;
-        sourceNode.current.loop = true;
-
-        if (onEnded) {
-          sourceNode.current.onended = onEnded;
+        if (!audioCtx.current) {
+          const AudioContextClass =
+            window.AudioContext ||
+            (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          audioCtx.current = new AudioContextClass();
+          gainNode.current = audioCtx.current.createGain();
+          gainNode.current.connect(audioCtx.current.destination);
         }
 
-        sourceNode.current.connect(gainNode.current!);
-        sourceNode.current.start();
-
-        if (durationSeconds && durationSeconds > 0) {
-          sourceNode.current.stop(audioCtx.current.currentTime + durationSeconds);
+        if (audioCtx.current.state === "suspended") {
+          await audioCtx.current.resume();
         }
+
+        const gainValue = Math.pow(volume / 100, 2) * 0.7;
+        gainNode.current!.gain.setValueAtTime(gainValue, audioCtx.current.currentTime);
+
+        stop();
+
+        const buffer = createNoiseBuffer(type);
+        if (buffer && audioCtx.current) {
+          const source = audioCtx.current.createBufferSource();
+          source.buffer = buffer;
+          source.loop = true;
+
+          if (onEnded) {
+            source.onended = onEnded;
+          }
+
+          source.connect(gainNode.current!);
+          source.start();
+
+          if (durationSeconds && durationSeconds > 0) {
+            source.stop(audioCtx.current.currentTime + durationSeconds);
+          }
+
+          sourceNode.current = source;
+        }
+      } catch (err) {
+        console.error("Failed to start noise:", err);
+      } finally {
+        isInitializing.current = false;
       }
     },
     [createNoiseBuffer, stop],
