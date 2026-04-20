@@ -70,7 +70,7 @@ export default function Home() {
     const savedNoise = localStorage.getItem("ambia_noise");
 
     setIsMounted(true);
-    if (savedVolume) setVolume(parseInt(savedVolume));
+    if (savedVolume) setVolume(parseInt(savedVolume, 10));
     if (savedNoise) {
       setActiveNoise(savedNoise as NoiseType);
       setTimeout(() => {

@@ -190,7 +190,7 @@ export function Footer({
                     max="100"
                     value={volume}
                     onInput={() => haptic.trigger("selection")}
-                    onChange={(e) => setVolume(parseInt(e.target.value))}
+                    onChange={(e) => setVolume(parseInt(e.target.value, 10))}
                     className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                     aria-label="Volume slider"
                   />
