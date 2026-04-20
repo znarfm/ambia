@@ -133,7 +133,7 @@
 
 @layer utilities {
   .snap-container {
-    @apply h-dvh snap-y snap-mandatory overflow-y-auto scroll-smooth;
+    @apply h-full snap-y snap-mandatory overflow-y-auto scroll-smooth;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
@@ -142,7 +142,7 @@
     display: none;
   }
   .snap-section {
-    scroll-snap-align: start;
+    scroll-snap-align: center;
     @apply relative flex h-full flex-col items-center justify-center overflow-hidden;
   }
   .safe-area-bottom {

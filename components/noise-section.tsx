@@ -45,7 +45,7 @@ export const NoiseSection = React.memo(
       ref,
     ) => {
       return (
-        <section ref={ref} id={id} className={`snap-section w-full pt-16 noise-${id} ${bgClass}`}>
+        <section ref={ref} id={id} className={`snap-section w-full noise-${id} ${bgClass}`}>
           <BackgroundAura colors={auraColors} />
 
           <div className="absolute inset-0 z-0 opacity-10">
