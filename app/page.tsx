@@ -59,6 +59,14 @@ export default function Home() {
     handleStopAudio,
   );
 
+  const openAbout = useCallback(() => {
+    if (!isTimerModalOpen) setIsAboutModalOpen(true);
+  }, [isTimerModalOpen]);
+
+  const openTimer = useCallback(() => {
+    if (!isAboutModalOpen) setIsTimerModalOpen(true);
+  }, [isAboutModalOpen]);
+
   const stopAll = useCallback(() => {
     handleStopAudio();
     clearTimer();
@@ -147,8 +155,8 @@ export default function Home() {
     onVolUp: () => setVolume((v) => Math.min(100, v + 5)),
     onVolDown: () => setVolume((v) => Math.max(0, v - 5)),
     onToggleTheme: () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
-    onOpenTimer: () => setIsTimerModalOpen(true),
-    onOpenAbout: () => setIsAboutModalOpen(true),
+    onOpenTimer: openTimer,
+    onOpenAbout: openAbout,
   });
 
   // Intersection Observer for scroll sync
@@ -184,7 +192,7 @@ export default function Home() {
         isMounted={isMounted}
         resolvedTheme={resolvedTheme}
         setTheme={setTheme}
-        setIsAboutModalOpen={setIsAboutModalOpen}
+        setIsAboutModalOpen={openAbout}
       />
 
       <NavDots activeNoise={activeNoise} scrollToSection={scrollToSection} />
@@ -233,7 +241,7 @@ export default function Home() {
         activeTimer={activeTimer}
         formatTime={formatTime}
         handleTimerSelect={handleTimerSelect}
-        setIsTimerModalOpen={setIsTimerModalOpen}
+        setIsTimerModalOpen={openTimer}
         handlePlayPause={handlePlayPause}
         scrollToSection={scrollToSection}
         activeNoise={activeNoise}
