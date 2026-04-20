@@ -115,7 +115,7 @@ export default function Home() {
     if (isPlaying && isMounted) {
       start(activeNoise, volume, timeLeft || undefined, handleStopAudio);
     }
-  }, [activeNoise, isPlaying, isMounted, start, volume, timeLeft, handleStopAudio]);
+  }, [activeNoise, isPlaying, isMounted, start, handleStopAudio]);
 
   useMediaSession({
     isPlaying,
