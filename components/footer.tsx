@@ -21,6 +21,9 @@ interface FooterProps {
   handleVolumeWheel: (e: React.WheelEvent) => void;
 }
 
+const BASE_TIMERS = ["15", "30", "60"];
+const PRESET_TIMERS = BASE_TIMERS.map((m) => `${m}M`);
+
 export function Footer({
   isPlaying,
   volume,
@@ -36,6 +39,8 @@ export function Footer({
   handleVolumeWheel,
 }: FooterProps) {
   const haptic = useWebHaptics();
+
+  const isCustomTimerActive = activeTimer !== null && !PRESET_TIMERS.includes(activeTimer);
 
   return (
     <footer className="bg-surface/80 border-outline-variant/10 safe-area-bottom z-50 flex-shrink-0 border-t backdrop-blur-lg transition-all duration-500">
@@ -60,7 +65,7 @@ export function Footer({
               )}
             </div>
             <div className="flex gap-2">
-              {["15", "30", "60"].map((mins) => (
+              {BASE_TIMERS.map((mins) => (
                 <button
                   key={mins}
                   onClick={() =>
@@ -90,14 +95,8 @@ export function Footer({
                   onClick={() => setIsTimerModalOpen(true)}
                   className="text-on-surface hover:text-primary bg-surface-variant border-outline-variant hover:bg-surface-variant/80 flex h-11 w-11 items-center justify-center rounded-xl border transition-all active:scale-95"
                   style={{
-                    backgroundColor:
-                      activeTimer && !["15", "30", "60"].map((m) => `${m}M`).includes(activeTimer!)
-                        ? "var(--dynamic-container)"
-                        : undefined,
-                    color:
-                      activeTimer && !["15", "30", "60"].map((m) => `${m}M`).includes(activeTimer!)
-                        ? "var(--dynamic-primary)"
-                        : undefined,
+                    backgroundColor: isCustomTimerActive ? "var(--dynamic-container)" : undefined,
+                    color: isCustomTimerActive ? "var(--dynamic-primary)" : undefined,
                   }}
                   aria-label="Set custom timer"
                 >
