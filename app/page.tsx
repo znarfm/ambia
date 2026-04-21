@@ -15,6 +15,7 @@ import { useNoise, type NoiseType, NOISE_TYPES } from "../hooks/use-noise";
 import { useTimer } from "../hooks/use-timer";
 import { useMediaSession } from "../hooks/use-media-session";
 import { useKeyboardShortcuts } from "../hooks/use-keyboard-shortcuts";
+import { useAmbiaPersistence } from "../hooks/use-ambia-persistence";
 import { formatTime } from "../utils/format-time";
 
 const TimerModal = dynamic(
@@ -73,29 +74,16 @@ export default function Home() {
     clearTimer();
   }, [handleStopAudio, clearTimer]);
 
-  // Load persistence
-  useEffect(() => {
-    const savedVolume = localStorage.getItem("ambia_volume");
-    const savedNoise = localStorage.getItem("ambia_noise");
-
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setIsMounted(true);
-    if (savedVolume) setVolume(parseInt(savedVolume, 10));
-    if (savedNoise) {
-      setActiveNoise(savedNoise as NoiseType);
-      setTimeout(() => {
-        const idx = NOISE_TYPES.indexOf(savedNoise as NoiseType);
-        if (idx !== -1) sectionsRef.current[idx]?.scrollIntoView({ behavior: "instant" });
-      }, 0);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
-    localStorage.setItem("ambia_volume", volume.toString());
-    localStorage.setItem("ambia_noise", activeNoise);
-    setAudioVolume(volume);
-  }, [volume, activeNoise, isMounted, setAudioVolume]);
+  useAmbiaPersistence({
+    volume,
+    setVolume,
+    activeNoise,
+    setActiveNoise,
+    setAudioVolume,
+    isMounted,
+    setIsMounted,
+    sectionsRef,
+  });
 
   const scrollToSection = useCallback(
     (index: number) => {

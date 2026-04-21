@@ -14,13 +14,13 @@ interface NoiseSectionProps {
 const BackgroundAura = React.memo<{ colors: string[] }>(({ colors }) => {
   return (
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-20 saturate-150 select-none dark:opacity-40">
-      <div className="absolute inset-0 transform-gpu [backface-visibility:hidden]">
+      <div className="absolute inset-0 scale-[2] transform-gpu [backface-visibility:hidden]">
         <div
-          className={`animate-float-slow absolute -top-[10%] -left-[10%] h-[80%] w-[80%] transform-gpu rounded-full blur-[60px] will-change-transform md:blur-[100px] ${colors[0]}`}
+          className={`animate-float-slow absolute -top-[10%] -left-[10%] h-[80%] w-[80%] scale-[0.5] transform-gpu rounded-full blur-[30px] will-change-transform md:blur-[50px] ${colors[0]}`}
           style={{ animationDelay: "0s" }}
         ></div>
         <div
-          className={`animate-float-slow absolute -right-[10%] -bottom-[10%] h-[70%] w-[70%] transform-gpu rounded-full blur-[50px] will-change-transform md:blur-[90px] ${colors[1] || colors[0]}`}
+          className={`animate-float-slow absolute -right-[10%] -bottom-[10%] h-[70%] w-[70%] scale-[0.5] transform-gpu rounded-full blur-[25px] will-change-transform md:blur-[45px] ${colors[1] || colors[0]}`}
           style={{ animationDelay: "-5s" }}
         ></div>
       </div>
