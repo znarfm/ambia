@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { useWebHaptics } from "web-haptics/react";
@@ -17,6 +17,7 @@ import { useMediaSession } from "../hooks/use-media-session";
 import { useKeyboardShortcuts } from "../hooks/use-keyboard-shortcuts";
 import { useAmbiaPersistence } from "../hooks/use-ambia-persistence";
 import { formatTime } from "../utils/format-time";
+import { throttle } from "../utils/throttle";
 
 const TimerModal = dynamic(
   () => import("../components/timer-modal").then((mod) => mod.TimerModal),
@@ -149,6 +150,15 @@ export default function Home() {
     onOpenAbout: openAbout,
   });
 
+  const throttledVolumeWheel = useMemo(
+    () =>
+      throttle((deltaY: number) => {
+        haptic.trigger("selection");
+        setVolume((v) => (deltaY > 0 ? Math.max(0, v - 2) : Math.min(100, v + 2)));
+      }, 50),
+    [haptic],
+  );
+
   // Intersection Observer for scroll sync
   useEffect(() => {
     if (!isMounted) return;
@@ -227,10 +237,7 @@ export default function Home() {
         scrollToSection={scrollToSection}
         activeNoise={activeNoise}
         setVolume={setVolume}
-        handleVolumeWheel={(e) => {
-          haptic.trigger("selection");
-          setVolume((v) => (e.deltaY > 0 ? Math.max(0, v - 2) : Math.min(100, v + 2)));
-        }}
+        handleVolumeWheel={(e) => throttledVolumeWheel(e.deltaY)}
       />
 
       <TimerModal
