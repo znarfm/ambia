@@ -1,5 +1,5 @@
 import { withSerwist } from "@serwist/turbopack";
 
 export default withSerwist({
-  allowedDevOrigins: ["192.168.0.119"],
+  allowedDevOrigins: ["192.168.0.119", "192.168.0.117"],
 });

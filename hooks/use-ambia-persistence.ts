@@ -12,6 +12,8 @@ interface PersistenceProps {
   isMounted: boolean;
   setIsMounted: Dispatch<SetStateAction<boolean>>;
   sectionsRef: RefObject<(HTMLElement | null)[]>;
+  isEmotionEnabled?: boolean;
+  setIsEmotionEnabled?: Dispatch<SetStateAction<boolean>>;
 }
 
 export function useAmbiaPersistence({
@@ -23,11 +25,14 @@ export function useAmbiaPersistence({
   isMounted,
   setIsMounted,
   sectionsRef,
+  isEmotionEnabled,
+  setIsEmotionEnabled,
 }: PersistenceProps) {
   // Load persistence
   useEffect(() => {
     const savedVolume = localStorage.getItem("ambia_volume");
     const savedNoise = localStorage.getItem("ambia_noise");
+    const savedEmotion = localStorage.getItem("ambia_emotion_enabled");
 
     setIsMounted(true);
     if (savedVolume) setVolume(parseInt(savedVolume, 10));
@@ -38,13 +43,19 @@ export function useAmbiaPersistence({
         if (idx !== -1) sectionsRef.current?.[idx]?.scrollIntoView({ behavior: "instant" });
       }, 0);
     }
-  }, [setVolume, setActiveNoise, setIsMounted, sectionsRef]);
+    if (savedEmotion && setIsEmotionEnabled) {
+      setIsEmotionEnabled(savedEmotion === "true");
+    }
+  }, [setVolume, setActiveNoise, setIsMounted, sectionsRef, setIsEmotionEnabled]);
 
   // Save persistence
   useEffect(() => {
     if (!isMounted) return;
     localStorage.setItem("ambia_volume", volume.toString());
     localStorage.setItem("ambia_noise", activeNoise);
+    if (isEmotionEnabled !== undefined) {
+      localStorage.setItem("ambia_emotion_enabled", isEmotionEnabled.toString());
+    }
     setAudioVolume(volume);
-  }, [volume, activeNoise, isMounted, setAudioVolume]);
+  }, [volume, activeNoise, isMounted, setAudioVolume, isEmotionEnabled]);
 }

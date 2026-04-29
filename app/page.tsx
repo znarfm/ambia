@@ -16,6 +16,8 @@ import { useTimer } from "../hooks/use-timer";
 import { useMediaSession } from "../hooks/use-media-session";
 import { useKeyboardShortcuts } from "../hooks/use-keyboard-shortcuts";
 import { useAmbiaPersistence } from "../hooks/use-ambia-persistence";
+import { useEmotion } from "../hooks/use-emotion";
+import { useEmotionNoise } from "../hooks/use-emotion-noise";
 import { formatTime } from "../utils/format-time";
 import { throttle } from "../utils/throttle";
 
@@ -38,6 +40,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(65);
   const [activeNoise, setActiveNoise] = useState<NoiseType>("white");
+  const [isEmotionEnabled, setIsEmotionEnabled] = useState(false);
 
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
@@ -84,6 +87,8 @@ export default function Home() {
     isMounted,
     setIsMounted,
     sectionsRef,
+    isEmotionEnabled,
+    setIsEmotionEnabled,
   });
 
   const scrollToSection = useCallback(
@@ -93,6 +98,19 @@ export default function Home() {
     },
     [haptic],
   );
+
+  const handleEmotionError = useCallback(() => {
+    setIsEmotionEnabled(false);
+  }, []);
+
+  const { dominantEmotion, stream } = useEmotion(isEmotionEnabled, handleEmotionError);
+
+  useEmotionNoise({
+    dominantEmotion,
+    activeNoise,
+    setActiveNoise,
+    scrollToSection,
+  });
 
   const handlePlayPause = useCallback(() => {
     const nextState = !isPlaying;
@@ -148,6 +166,7 @@ export default function Home() {
     onToggleTheme: () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
     onOpenTimer: openTimer,
     onOpenAbout: openAbout,
+    onToggleEmotion: () => setIsEmotionEnabled(!isEmotionEnabled),
   });
 
   const throttledVolumeWheel = useMemo(
@@ -184,6 +203,10 @@ export default function Home() {
         resolvedTheme={resolvedTheme}
         setTheme={setTheme}
         setIsAboutModalOpen={openAbout}
+        isEmotionEnabled={isEmotionEnabled}
+        setIsEmotionEnabled={setIsEmotionEnabled}
+        stream={stream}
+        dominantEmotion={dominantEmotion}
       />
 
       <NavDots activeNoise={activeNoise} scrollToSection={scrollToSection} />

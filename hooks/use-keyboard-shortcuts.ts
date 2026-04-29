@@ -11,6 +11,7 @@ interface ShortcutOptions {
   onToggleTheme: () => void;
   onOpenTimer: () => void;
   onOpenAbout: () => void;
+  onToggleEmotion?: () => void;
 }
 
 export function useKeyboardShortcuts({
@@ -22,6 +23,7 @@ export function useKeyboardShortcuts({
   onToggleTheme,
   onOpenTimer,
   onOpenAbout,
+  onToggleEmotion,
 }: ShortcutOptions) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -57,6 +59,9 @@ export function useKeyboardShortcuts({
         case "a":
           onOpenAbout();
           break;
+        case "e":
+          if (onToggleEmotion) onToggleEmotion();
+          break;
       }
     };
 
@@ -71,5 +76,6 @@ export function useKeyboardShortcuts({
     onToggleTheme,
     onOpenTimer,
     onOpenAbout,
+    onToggleEmotion,
   ]);
 }
