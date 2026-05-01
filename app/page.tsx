@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { useWebHaptics } from "web-haptics/react";
@@ -16,7 +16,10 @@ import { useTimer } from "../hooks/use-timer";
 import { useMediaSession } from "../hooks/use-media-session";
 import { useKeyboardShortcuts } from "../hooks/use-keyboard-shortcuts";
 import { useAmbiaPersistence } from "../hooks/use-ambia-persistence";
+import { useEmotion } from "../hooks/use-emotion";
+import { useEmotionNoise } from "../hooks/use-emotion-noise";
 import { formatTime } from "../utils/format-time";
+import { throttle } from "../utils/throttle";
 
 const TimerModal = dynamic(
   () => import("../components/timer-modal").then((mod) => mod.TimerModal),
@@ -37,6 +40,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(65);
   const [activeNoise, setActiveNoise] = useState<NoiseType>("white");
+  const [isEmotionEnabled, setIsEmotionEnabled] = useState(false);
 
   const [isTimerModalOpen, setIsTimerModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
@@ -83,6 +87,8 @@ export default function Home() {
     isMounted,
     setIsMounted,
     sectionsRef,
+    isEmotionEnabled,
+    setIsEmotionEnabled,
   });
 
   const scrollToSection = useCallback(
@@ -92,6 +98,19 @@ export default function Home() {
     },
     [haptic],
   );
+
+  const handleEmotionError = useCallback(() => {
+    setIsEmotionEnabled(false);
+  }, []);
+
+  const { dominantEmotion, stream } = useEmotion(isEmotionEnabled, handleEmotionError);
+
+  useEmotionNoise({
+    dominantEmotion,
+    activeNoise,
+    setActiveNoise,
+    scrollToSection,
+  });
 
   const handlePlayPause = useCallback(() => {
     const nextState = !isPlaying;
@@ -147,7 +166,17 @@ export default function Home() {
     onToggleTheme: () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
     onOpenTimer: openTimer,
     onOpenAbout: openAbout,
+    onToggleEmotion: () => setIsEmotionEnabled(!isEmotionEnabled),
   });
+
+  const throttledVolumeWheel = useMemo(
+    () =>
+      throttle((deltaY: number) => {
+        haptic.trigger("selection");
+        setVolume((v) => (deltaY > 0 ? Math.max(0, v - 2) : Math.min(100, v + 2)));
+      }, 50),
+    [haptic],
+  );
 
   // Intersection Observer for scroll sync
   useEffect(() => {
@@ -174,6 +203,10 @@ export default function Home() {
         resolvedTheme={resolvedTheme}
         setTheme={setTheme}
         setIsAboutModalOpen={openAbout}
+        isEmotionEnabled={isEmotionEnabled}
+        setIsEmotionEnabled={setIsEmotionEnabled}
+        stream={stream}
+        dominantEmotion={dominantEmotion}
       />
 
       <NavDots activeNoise={activeNoise} scrollToSection={scrollToSection} />
@@ -227,10 +260,7 @@ export default function Home() {
         scrollToSection={scrollToSection}
         activeNoise={activeNoise}
         setVolume={setVolume}
-        handleVolumeWheel={(e) => {
-          haptic.trigger("selection");
-          setVolume((v) => (e.deltaY > 0 ? Math.max(0, v - 2) : Math.min(100, v + 2)));
-        }}
+        handleVolumeWheel={(e) => throttledVolumeWheel(e.deltaY)}
       />
 
       <TimerModal
