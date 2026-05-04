@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import { X, Timer } from "lucide-react";
 import { useWebHaptics } from "web-haptics/react";
+import { useModal } from "@/hooks/use-modal";
 
 interface TimerModalProps {
   isOpen: boolean;
@@ -19,15 +20,9 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 }) => {
   const haptic = useWebHaptics();
   const [customValue, setCustomValue] = useState("");
-  const [shouldRender, setShouldRender] = useState(isOpen);
-  const [isAnimate, setIsAnimate] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleClose = React.useCallback(() => {
-    haptic.trigger("light");
-    setIsAnimate(false);
-    setTimeout(onClose, 500);
-  }, [onClose, haptic]);
+  const { shouldRender, isAnimate, handleClose } = useModal({ isOpen, onClose });
 
   const handleSubmit = React.useCallback(() => {
     haptic.trigger("medium");
@@ -41,23 +36,6 @@ export const TimerModal: React.FC<TimerModalProps> = ({
 
   React.useEffect(() => {
     if (isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setShouldRender(true);
-      const timer = setTimeout(() => setIsAnimate(true), 10);
-      return () => clearTimeout(timer);
-    } else {
-      // Defer to avoid cascading render error
-      const frame = requestAnimationFrame(() => setIsAnimate(false));
-      const timer = setTimeout(() => setShouldRender(false), 500);
-      return () => {
-        cancelAnimationFrame(frame);
-        clearTimeout(timer);
-      };
-    }
-  }, [isOpen]);
-
-  React.useEffect(() => {
-    if (isOpen) {
       // Small delay to ensure modal is visible/rendered
       const timer = setTimeout(() => {
         inputRef.current?.focus();
@@ -65,15 +43,6 @@ export const TimerModal: React.FC<TimerModalProps> = ({
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
-
-  React.useEffect(() => {
-    if (!isOpen) return;
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleClose();
-    };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, [isOpen, handleClose]);
 
   if (!isOpen && !shouldRender) return null;
 
