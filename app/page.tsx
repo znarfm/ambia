@@ -137,7 +137,6 @@ export default function Home() {
   useMediaSession({
     isPlaying,
     activeNoise,
-    volume,
     onPlay: handlePlayPause,
     onPause: handlePlayPause,
     onStop: stopAll,

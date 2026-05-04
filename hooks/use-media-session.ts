@@ -6,7 +6,6 @@ import { type NoiseType } from "./use-noise";
 interface MediaSessionOptions {
   isPlaying: boolean;
   activeNoise: NoiseType;
-  volume: number;
   onPlay: () => void;
   onPause: () => void;
   onStop: () => void;
