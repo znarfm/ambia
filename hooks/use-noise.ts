@@ -36,12 +36,6 @@ const NOISE_CONFIG = {
   masterGain: 0.7,
 } as const;
 
-const runWarmup = (fn: () => void) => {
-  for (let i = 0; i < WARMUP_ITERATIONS; i++) {
-    fn();
-  }
-};
-
 export function useNoise() {
   const audioCtx = useRef<AudioContext | null>(null);
   const gainNode = useRef<GainNode | null>(null);
@@ -68,8 +62,9 @@ export function useNoise() {
     const output = buffer.getChannelData(0);
 
     if (type === "white") {
+      const gain = NOISE_CONFIG.white.gain;
       for (let i = 0; i < bufferSize; i++) {
-        output[i] = (Math.random() * 2 - 1) * NOISE_CONFIG.white.gain;
+        output[i] = (Math.random() * 2 - 1) * gain;
       }
     } else if (type === "pink") {
       let b0 = 0.0,
@@ -80,37 +75,60 @@ export function useNoise() {
         b5 = 0.0,
         b6 = 0.0;
 
-      const updatePink = () => {
-        const white = Math.random() * 2 - 1;
-        b0 = NOISE_CONFIG.pink.b0 * b0 + white * NOISE_CONFIG.pink.b0w;
-        b1 = NOISE_CONFIG.pink.b1 * b1 + white * NOISE_CONFIG.pink.b1w;
-        b2 = NOISE_CONFIG.pink.b2 * b2 + white * NOISE_CONFIG.pink.b2w;
-        b3 = NOISE_CONFIG.pink.b3 * b3 + white * NOISE_CONFIG.pink.b3w;
-        b4 = NOISE_CONFIG.pink.b4 * b4 + white * NOISE_CONFIG.pink.b4w;
-        b5 = NOISE_CONFIG.pink.b5 * b5 - white * NOISE_CONFIG.pink.b5w;
-        const out = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * NOISE_CONFIG.pink.outW;
-        b6 = white * NOISE_CONFIG.pink.b6w;
-        return out;
-      };
+      const {
+        b0: cb0,
+        b0w,
+        b1: cb1,
+        b1w,
+        b2: cb2,
+        b2w,
+        b3: cb3,
+        b3w,
+        b4: cb4,
+        b4w,
+        b5: cb5,
+        b5w,
+        outW,
+        b6w,
+        gain,
+      } = NOISE_CONFIG.pink;
 
-      runWarmup(updatePink);
+      for (let i = 0; i < WARMUP_ITERATIONS; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = cb0 * b0 + white * b0w;
+        b1 = cb1 * b1 + white * b1w;
+        b2 = cb2 * b2 + white * b2w;
+        b3 = cb3 * b3 + white * b3w;
+        b4 = cb4 * b4 + white * b4w;
+        b5 = cb5 * b5 - white * b5w;
+        b6 = white * b6w;
+      }
 
       for (let i = 0; i < bufferSize; i++) {
-        output[i] = updatePink() * NOISE_CONFIG.pink.gain;
+        const white = Math.random() * 2 - 1;
+        b0 = cb0 * b0 + white * b0w;
+        b1 = cb1 * b1 + white * b1w;
+        b2 = cb2 * b2 + white * b2w;
+        b3 = cb3 * b3 + white * b3w;
+        b4 = cb4 * b4 + white * b4w;
+        b5 = cb5 * b5 - white * b5w;
+        const out = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * outW;
+        b6 = white * b6w;
+        output[i] = out * gain;
       }
     } else if (type === "brown") {
       let lastOut = 0.0;
+      const { whiteMult, lastOutMult, gain } = NOISE_CONFIG.brown;
 
-      const updateBrown = () => {
+      for (let i = 0; i < WARMUP_ITERATIONS; i++) {
         const white = Math.random() * 2 - 1;
-        lastOut = (lastOut + NOISE_CONFIG.brown.whiteMult * white) / NOISE_CONFIG.brown.lastOutMult;
-        return lastOut;
-      };
-
-      runWarmup(updateBrown);
+        lastOut = (lastOut + whiteMult * white) / lastOutMult;
+      }
 
       for (let i = 0; i < bufferSize; i++) {
-        output[i] = updateBrown() * NOISE_CONFIG.brown.gain;
+        const white = Math.random() * 2 - 1;
+        lastOut = (lastOut + whiteMult * white) / lastOutMult;
+        output[i] = lastOut * gain;
       }
     }
 
