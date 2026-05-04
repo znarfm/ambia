@@ -68,7 +68,11 @@ describe("useKeyboardShortcuts", () => {
       useKeyboardShortcuts(options);
     });
 
-    const testShortcut = (key: string, callbackName: string, shouldPreventDefault: boolean = false) => {
+    const testShortcut = (
+      key: string,
+      callbackName: string,
+      shouldPreventDefault: boolean = false,
+    ) => {
       test(`triggers ${callbackName} when "${key}" is pressed`, () => {
         const preventDefault = mock(() => {});
         capturedHandler({

@@ -14,10 +14,10 @@ const manrope = Manrope({
 });
 
 const APP_NAME = "Ambia";
-const APP_DEFAULT_TITLE = "Ambia | Sensory Sanctuary";
+const APP_DEFAULT_TITLE = "Ambia | Immersive Procedural Noise Generator for Focus & Sleep";
 const APP_TITLE_TEMPLATE = "%s - Ambia";
 const APP_DESCRIPTION =
-  "Immersive procedural white, pink, and brown noise for focus, sleep, and relaxation.";
+  "Discover Ambia, a minimalist procedural noise generator. Experience pure white, natural pink, and deep brown soundscapes to mask distractions, enhance focus, and improve your sleep and relaxation.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ambia.meinard.dev"),
@@ -88,7 +88,7 @@ export default function RootLayout({
     url: "https://ambia.meinard.dev",
     applicationCategory: "MultimediaApplication",
     operatingSystem: "Any",
-    abstract: "A minimalist procedural noise generator for focus and relaxation.",
+    abstract: APP_DESCRIPTION,
   };
 
   return (

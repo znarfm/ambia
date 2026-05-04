@@ -2,7 +2,6 @@ import { ImageResponse } from "next/og";
 
 // Route segment config
 
-
 // Image metadata
 export const alt = "Ambia Apple Icon";
 export const size = {
