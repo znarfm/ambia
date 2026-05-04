@@ -3,6 +3,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "../components/theme-provider";
 import { SerwistProvider } from "./serwist";
+import { safeJsonLd } from "../utils/safe-json";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -95,7 +96,7 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
         />
       </head>
       <body className="flex min-h-full flex-col">
