@@ -46,7 +46,9 @@ export function useNoise() {
   useEffect(() => {
     return () => {
       if (audioCtx.current) {
-        audioCtx.current.close().catch(() => {});
+        audioCtx.current.close().catch((err) => {
+          console.error("Failed to close audio context:", err);
+        });
       }
     };
   }, []);
